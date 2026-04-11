@@ -128,6 +128,11 @@ main{padding:20px;max-width:1400px;margin:0 auto}
   .card{padding:11px 13px}
 }
 
+
+#fab{position:fixed;bottom:24px;left:24px;width:56px;height:56px;border-radius:50%;background:var(--ac);color:#fff;border:none;font-size:1.8rem;cursor:pointer;box-shadow:0 4px 16px rgba(124,92,255,.4);z-index:90;display:flex;align-items:center;justify-content:center;font-weight:300;line-height:1}
+#fab:hover{transform:scale(1.05);background:var(--ac2)}
+@media(max-width:640px){#fab{bottom:16px;left:16px;width:52px;height:52px}}
+
 /* ============ MODAL ============ */
 .modal{position:fixed;inset:0;background:rgba(0,0,0,.7);display:none;align-items:center;justify-content:center;z-index:200;padding:20px}
 .modal.on{display:flex}
@@ -172,6 +177,7 @@ main{padding:20px;max-width:1400px;margin:0 auto}
   <button data-p="purchases">🛒 רכש</button>
   <button data-p="quotes">📋 הצעות</button>
   <button data-p="vendors">📞 ספקים</button>
+  <button data-p="recs">⭐ המלצות</button>
   <button data-p="decisions">📝 החלטות</button>
   <button data-p="issues">⚠️ חריגות <span class="badge" id="navIssues">0</span></button>
   <button data-p="risks">🚨 סיכונים</button>
@@ -237,6 +243,15 @@ main{padding:20px;max-width:1400px;margin:0 auto}
     <div id="vendorList"></div>
   </div>
 
+  
+  <!-- RECOMMENDATIONS -->
+  <div class="pnl" id="p-recs">
+    <h2>המלצות — חנויות וספקים מומלצים</h2>
+    <p class="pnl-sub">חנויות וספקים שכדאי לבדוק. לחצי על הלינק לפתיחה.</p>
+    <button class="btn btn-sm" style="margin-bottom:14px" onclick="openRecForm()">➕ המלצה חדשה</button>
+    <div id="recList"></div>
+  </div>
+
   <!-- DECISIONS -->
   <div class="pnl" id="p-decisions">
     <h2>לוג החלטות</h2>
@@ -269,6 +284,8 @@ main{padding:20px;max-width:1400px;margin:0 auto}
   </div>
 </main>
 
+<button id="fab" style="display:none" onclick="openQuickTask()" title="משימה חדשה (Ctrl+N)">+</button>
+
 <!-- ============ MODAL ============ -->
 <div class="modal" id="modal">
   <div class="modal-box">
@@ -289,8 +306,8 @@ const STORAGE_BASE=SUPABASE_URL+'/storage/v1/object/public/renovation-files/';
 const sb=supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
 
 // ============ STATE ============
-const state={user:null,tasks:[],expenses:[],vendors:[],purchases:[],quotes:[],decisions:[],issues:[],risks:[],photos:[]};
-const TABLES=['vendors','tasks','expenses','purchases','quotes','decisions','issues','risks','photos'];
+const state={user:null,tasks:[],expenses:[],vendors:[],purchases:[],quotes:[],decisions:[],issues:[],risks:[],photos:[],recommendations:[]};
+const TABLES=['vendors','tasks','expenses','purchases','quotes','decisions','issues','risks','photos','recommendations'];
 
 // Project constants
 const PROJECT={
@@ -331,7 +348,7 @@ function showApp(){
   $('authScreen').style.display='none';
   $('appHdr').style.display='block';
   $('appNav').style.display='flex';
-  $('appMain').style.display='block';
+  $('appMain').style.display='block';$('fab').style.display='flex';
   $('userChip').textContent=state.user.email;
   $('hdrSub').textContent=`קבלן: מולי סגל · התחלה 12.04.2026 · 65 ימי עבודה`;
 }
@@ -524,13 +541,29 @@ const PLANS=[
   ['kitchen-floor-plan.png','תוכנית רצפה (410)'],
 ];
 function renderPlans(){
-  $('plansGrid').innerHTML=PLANS.map(([f,l])=>`<a href="${STORAGE_BASE}${f}" target="_blank" style="text-decoration:none;color:inherit"><div style="background:var(--s1);border:1px solid var(--bd);border-radius:10px;overflow:hidden"><img src="${STORAGE_BASE}${f}" loading="lazy" style="width:100%;height:160px;object-fit:cover;display:block" onerror="this.style.opacity=0.3"><div style="padding:9px 12px;font-size:.78rem">${l}</div></div></a>`).join('');
+  $('plansGrid').innerHTML=PLANS.map(([f,l])=>`<a href="${STORAGE_BASE}${f}" target="_blank" style="text-decoration:none;color:inherit"><div style="background:var(--s1);border:1px solid var(--bd);border-radius:10px;overflow:hidden"><img src="${STORAGE_BASE}${f}" data-name="${f}" loading="lazy" style="width:100%;height:160px;object-fit:cover;display:block" onerror="tryImg(this)"><div style="padding:9px 12px;font-size:.78rem">${l}</div></div></a>`).join('');
 }
 
 // ============ RENDER ALL ============
 function renderAll(){
   renderKPIs();renderTasks();renderBudget();renderVendors();renderPurchases();
-  renderQuotes();renderDecisions();renderIssues();renderRisks();renderPlans();
+  renderQuotes();renderRecs();renderDecisions();renderIssues();renderRisks();renderPlans();
+}
+
+
+function renderRecs(){
+  $('recList').innerHTML=state.recommendations.length?state.recommendations.map(r=>`<div class="card"><div class="card-main"><div class="card-title">${esc(r.store_name||'')}</div><div class="card-meta">${esc(r.purchase_type||'')}${r.added_by?' · '+esc(r.added_by):''}</div>${r.link?`<a href="${esc(r.link)}" target="_blank" style="font-size:.74rem;color:var(--ac2);text-decoration:none;display:inline-block;margin-top:6px">🔗 ${esc(r.link.substring(0,55))}...</a>`:''}${r.notes?'<div style="font-size:.75rem;color:var(--t2);margin-top:4px">'+esc(r.notes)+'</div>':''}</div><div class="card-actions"><button class="btn btn-sm btn-gh" onclick="del(\'recommendations\',${r.id})">✕</button></div></div>`).join('').replace(/\\'/g,"'"):'<div class="empty">אין המלצות. הוסיפי את הראשונה.</div>';
+}
+function openRecForm(){
+  openModal('המלצה חדשה',`<div class="form-row"><input id="f_store" placeholder="שם חנות"><input id="f_type" placeholder="סוג רכישה (פרקט/אריחים/...)"><input id="f_link" placeholder="לינק (https://...)"><input id="f_by" placeholder="מי המליץ"><textarea id="f_notes" placeholder="הערות" rows="2"></textarea></div>`,
+    async()=>{await save('recommendations',{store_name:$('f_store').value,purchase_type:$('f_type').value,link:$('f_link').value,added_by:$('f_by').value,notes:$('f_notes').value})});
+}
+
+// Quick add task FAB
+function openQuickTask(){
+  openModal('משימה מהירה',`<div class="form-row"><input id="qt_title" placeholder="כותרת המשימה" autofocus><select id="qt_p"><option value="urgent">דחוף</option><option value="high" selected>גבוה</option><option value="med">רגיל</option></select><input id="qt_owner" placeholder="אחראי (שלומית/ארז/שניהם)" value="shlomit"><input id="qt_due" type="date"><input id="qt_chap" placeholder="פרק (אופציונלי)"></div>`,
+    async()=>{const t=$('qt_title').value.trim();if(!t)return;await save('tasks',{title:t,priority:$('qt_p').value,owner:$('qt_owner').value,due_date:$('qt_due').value||null,chapter:$('qt_chap').value,status:'open'})});
+  setTimeout(()=>$('qt_title').focus(),100);
 }
 
 // ============ FORMS / MODAL ============
@@ -640,6 +673,7 @@ function globalSearchHandler(){
 sb.auth.onAuthStateChange((event,session)=>{
   if(event==='SIGNED_IN'&&!state.user){state.user=session.user;showApp();loadAll().then(renderAll)}
 });
+document.addEventListener('keydown',e=>{if((e.ctrlKey||e.metaKey)&&e.key==='n'&&state.user){e.preventDefault();openQuickTask()}});
 checkAuth();
 </script>
 </body>
