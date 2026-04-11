@@ -141,9 +141,10 @@ main{padding:20px;max-width:1400px;margin:0 auto}
 <div class="auth" id="authScreen">
   <div class="auth-box">
     <h1>🏗 שיפוץ נחמני 13</h1>
-    <p>הזיני את כתובת המייל שלך לקבלת קישור כניסה</p>
+    <p>התחברות עם אימייל וסיסמה</p>
     <input type="email" id="authEmail" placeholder="shlomit.joy@gmail.com" autocomplete="email">
-    <button id="authBtn" onclick="sendMagicLink()">שלח קישור כניסה</button>
+    <input type="password" id="authPass" placeholder="סיסמה" autocomplete="current-password" onkeydown="if(event.key==='Enter')login()">
+    <button id="authBtn" onclick="login()">כניסה</button>
     <div class="auth-msg" id="authMsg"></div>
   </div>
 </div>
@@ -307,14 +308,16 @@ const $=id=>document.getElementById(id);
 const esc=s=>(s||'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
 
 // ============ AUTH ============
-async function sendMagicLink(){
+async function login(){
   const email=$('authEmail').value.trim();
-  if(!email)return;
+  const password=$('authPass').value;
+  if(!email||!password){$('authMsg').style.color='var(--red)';$('authMsg').textContent='יש למלא מייל וסיסמה';return}
   $('authBtn').disabled=true;
-  $('authMsg').textContent='שולח...';
-  const{error}=await sb.auth.signInWithOtp({email,options:{emailRedirectTo:window.location.href}});
+  $('authMsg').style.color='var(--t2)';
+  $('authMsg').textContent='מתחבר...';
+  const{data,error}=await sb.auth.signInWithPassword({email,password});
   if(error){$('authMsg').style.color='var(--red)';$('authMsg').textContent=error.message;$('authBtn').disabled=false}
-  else{$('authMsg').style.color='var(--grn)';$('authMsg').textContent='✓ נשלח קישור! בדקי את המייל'}
+  else{state.user=data.user;showApp();await loadAll();renderAll()}
 }
 async function logout(){await sb.auth.signOut();location.reload()}
 
