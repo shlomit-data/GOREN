@@ -1,0 +1,643 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>שיפוץ נחמני 13 — לוח בקרה</title>
+<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;600;700&family=Rubik:wght@400;500;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+:root{
+  --bg:#0b0f17;--s1:#111827;--s2:#1a2333;--s3:#243044;--bd:#2a3548;
+  --t1:#e7ecf3;--t2:#9aa6b8;--t3:#6b7689;
+  --ac:#7c5cff;--ac2:#a78bfa;
+  --grn:#34d399;--grn-bg:rgba(52,211,153,.12);
+  --ylw:#fbbf24;--ylw-bg:rgba(251,191,36,.12);
+  --red:#f87171;--red-bg:rgba(248,113,113,.12);
+  --blu:#60a5fa;--blu-bg:rgba(96,165,250,.12);
+  --pnk:#f472b6;--pnk-bg:rgba(244,114,182,.12);
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{margin:0;font-family:'Heebo',sans-serif;background:var(--bg);color:var(--t1);font-size:14px;line-height:1.5;min-height:100vh}
+.num{font-family:'Rubik',sans-serif}
+
+/* ============ AUTH SCREEN ============ */
+.auth{position:fixed;inset:0;background:var(--bg);display:flex;align-items:center;justify-content:center;padding:20px;z-index:1000}
+.auth-box{background:var(--s1);border:1px solid var(--bd);border-radius:14px;padding:32px;max-width:400px;width:100%}
+.auth-box h1{margin:0 0 8px;font-size:1.3rem}
+.auth-box p{color:var(--t2);font-size:.85rem;margin:0 0 20px}
+.auth-box input{width:100%;padding:12px;background:var(--s2);border:1px solid var(--bd);border-radius:8px;color:var(--t1);font-family:inherit;font-size:.9rem;margin-bottom:10px}
+.auth-box button{width:100%;padding:12px;background:var(--ac);color:#fff;border:none;border-radius:8px;font-family:inherit;font-weight:600;cursor:pointer;font-size:.9rem}
+.auth-box button:disabled{opacity:.5}
+.auth-msg{font-size:.8rem;color:var(--grn);margin-top:10px;text-align:center;min-height:18px}
+
+/* ============ LAYOUT ============ */
+.hdr{background:var(--s1);border-bottom:1px solid var(--bd);padding:14px 20px;position:sticky;top:0;z-index:50}
+.hdr-row{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.hdr h1{margin:0;font-size:1.1rem;font-weight:700}
+.hdr-sub{font-size:.74rem;color:var(--t2);margin-top:2px}
+.hdr-actions{display:flex;gap:8px;align-items:center}
+.search-box{background:var(--s2);border:1px solid var(--bd);border-radius:8px;padding:7px 12px;color:var(--t1);font-family:inherit;font-size:.82rem;width:200px}
+.btn-icon{background:var(--s2);border:1px solid var(--bd);color:var(--t2);width:34px;height:34px;border-radius:8px;cursor:pointer;font-size:.9rem}
+.user-chip{font-size:.72rem;color:var(--t2);padding:6px 10px;background:var(--s2);border-radius:6px}
+
+.nav{background:var(--s1);border-bottom:1px solid var(--bd);padding:8px 20px;display:flex;gap:6px;overflow-x:auto;position:sticky;top:60px;z-index:40}
+.nav button{font-family:inherit;background:transparent;border:1px solid transparent;color:var(--t2);padding:8px 14px;border-radius:8px;cursor:pointer;font-size:.82rem;font-weight:500;white-space:nowrap;display:flex;align-items:center;gap:6px}
+.nav button:hover{background:var(--s2);color:var(--t1)}
+.nav button.on{background:var(--s2);border-color:var(--bd);color:var(--ac2);font-weight:600}
+.nav .badge{background:var(--red);color:#fff;font-size:.65rem;padding:1px 6px;border-radius:8px;font-weight:700;min-width:16px;text-align:center}
+
+main{padding:20px;max-width:1400px;margin:0 auto}
+.pnl{display:none}.pnl.on{display:block}
+.pnl h2{margin:0 0 6px;font-size:1.05rem}
+.pnl-sub{color:var(--t2);font-size:.78rem;margin:0 0 16px}
+
+/* ============ KPI CARDS ============ */
+.kpi-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px;margin-bottom:20px}
+.kpi{background:var(--s1);border:1px solid var(--bd);border-radius:11px;padding:14px;border-right:3px solid var(--ac)}
+.kpi.grn{border-right-color:var(--grn)}
+.kpi.ylw{border-right-color:var(--ylw)}
+.kpi.red{border-right-color:var(--red)}
+.kpi.blu{border-right-color:var(--blu)}
+.kpi.pnk{border-right-color:var(--pnk)}
+.kpi-lbl{font-size:.72rem;color:var(--t2);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px}
+.kpi-val{font-family:'Rubik',sans-serif;font-size:1.5rem;font-weight:700;line-height:1.1}
+.kpi-sub{font-size:.7rem;color:var(--t3);margin-top:4px}
+
+/* ============ FORMS / INPUTS ============ */
+.form-row{display:grid;gap:8px;margin-bottom:14px}
+.form-row input,.form-row select,.form-row textarea{font-family:inherit;padding:9px 11px;background:var(--s2);border:1px solid var(--bd);border-radius:7px;color:var(--t1);font-size:.83rem}
+.form-row input:focus,.form-row select:focus{outline:none;border-color:var(--ac)}
+.btn{font-family:inherit;padding:9px 16px;background:var(--ac);color:#fff;border:none;border-radius:7px;font-weight:600;cursor:pointer;font-size:.83rem}
+.btn:hover{filter:brightness(1.1)}
+.btn-sm{padding:5px 11px;font-size:.74rem}
+.btn-gh{background:var(--s2);border:1px solid var(--bd);color:var(--t1)}
+
+/* ============ LISTS / CARDS ============ */
+.card{background:var(--s1);border:1px solid var(--bd);border-radius:10px;padding:13px 16px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
+.card-main{flex:1;min-width:0}
+.card-title{font-weight:600;font-size:.9rem;margin-bottom:3px}
+.card-meta{font-size:.72rem;color:var(--t3);display:flex;gap:8px;flex-wrap:wrap;margin-top:4px}
+.card-actions{display:flex;gap:6px;flex-shrink:0}
+.tag{display:inline-block;font-size:.66rem;padding:2px 7px;border-radius:5px;font-weight:600}
+.tag.urgent{background:var(--red-bg);color:var(--red)}
+.tag.high{background:var(--ylw-bg);color:var(--ylw)}
+.tag.med{background:var(--blu-bg);color:var(--blu)}
+.tag.done{background:var(--grn-bg);color:var(--grn)}
+.tag.late{background:var(--red-bg);color:var(--red);animation:pulse 2s infinite}
+@keyframes pulse{50%{opacity:.5}}
+
+/* checkbox */
+.chk{width:20px;height:20px;border-radius:5px;border:2px solid var(--bd);cursor:pointer;flex-shrink:0;margin-top:2px;display:flex;align-items:center;justify-content:center;background:var(--s2)}
+.chk.done{background:var(--grn);border-color:var(--grn)}
+.chk.done::after{content:'✓';color:#fff;font-size:.78rem;font-weight:700}
+.task-title.done{text-decoration:line-through;color:var(--t3)}
+
+/* ============ FILTERS ============ */
+.filters{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px}
+.filters button{font-family:inherit;font-size:.74rem;padding:5px 11px;border-radius:6px;border:1px solid var(--bd);background:transparent;color:var(--t2);cursor:pointer}
+.filters button.on{background:var(--ac);border-color:var(--ac);color:#fff}
+
+/* ============ SECTIONS (collapsible) ============ */
+.sec{background:var(--s1);border:1px solid var(--bd);border-radius:10px;margin-bottom:10px;overflow:hidden}
+.sec-h{padding:12px 16px;cursor:pointer;display:flex;justify-content:space-between;align-items:center}
+.sec-h h3{margin:0;font-size:.9rem;font-weight:600;display:flex;align-items:center;gap:8px}
+.sec-b{padding:0 16px 14px;display:none}
+.sec.open .sec-b{display:block}
+.chv{transition:transform .2s;color:var(--t3)}
+.sec.open .chv{transform:rotate(180deg)}
+
+/* ============ TABLES ============ */
+.tbl{width:100%;border-collapse:collapse;font-size:.8rem}
+.tbl th{text-align:right;padding:8px;background:var(--s2);color:var(--t2);font-weight:600;font-size:.72rem;text-transform:uppercase}
+.tbl td{padding:9px 8px;border-top:1px solid var(--bd)}
+.tbl-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
+
+/* ============ EMPTY STATE ============ */
+.empty{text-align:center;color:var(--t3);padding:30px 20px;font-size:.85rem}
+
+/* ============ MOBILE ============ */
+@media(max-width:640px){
+  .hdr{padding:12px 14px}.hdr h1{font-size:1rem}
+  .hdr-actions{width:100%;margin-top:8px}
+  .search-box{flex:1;width:auto}
+  .nav{padding:6px 14px;top:90px}
+  .nav button{padding:6px 11px;font-size:.76rem}
+  main{padding:14px}
+  .kpi-val{font-size:1.25rem}
+  .card{padding:11px 13px}
+}
+
+/* ============ MODAL ============ */
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.7);display:none;align-items:center;justify-content:center;z-index:200;padding:20px}
+.modal.on{display:flex}
+.modal-box{background:var(--s1);border:1px solid var(--bd);border-radius:14px;padding:24px;max-width:500px;width:100%;max-height:90vh;overflow-y:auto}
+.modal-box h3{margin:0 0 14px}
+</style>
+</head>
+<body>
+
+<!-- ============ AUTH SCREEN ============ -->
+<div class="auth" id="authScreen">
+  <div class="auth-box">
+    <h1>🏗 שיפוץ נחמני 13</h1>
+    <p>הזיני את כתובת המייל שלך לקבלת קישור כניסה</p>
+    <input type="email" id="authEmail" placeholder="shlomit.joy@gmail.com" autocomplete="email">
+    <button id="authBtn" onclick="sendMagicLink()">שלח קישור כניסה</button>
+    <div class="auth-msg" id="authMsg"></div>
+  </div>
+</div>
+
+<!-- ============ HEADER ============ -->
+<div class="hdr" id="appHdr" style="display:none">
+  <div class="hdr-row">
+    <div>
+      <h1>🏗 שיפוץ נחמני 13</h1>
+      <div class="hdr-sub" id="hdrSub">טוען...</div>
+    </div>
+    <div class="hdr-actions">
+      <input class="search-box" id="globalSearch" placeholder="🔍 חיפוש כללי..." oninput="globalSearchHandler()">
+      <span class="user-chip" id="userChip"></span>
+      <button class="btn-icon" onclick="logout()" title="התנתקות">⎋</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============ NAV ============ -->
+<nav class="nav" id="appNav" style="display:none">
+  <button class="on" data-p="overview">📊 סקירה</button>
+  <button data-p="tasks">✓ משימות <span class="badge" id="navTasks">0</span></button>
+  <button data-p="budget">💰 תקציב</button>
+  <button data-p="purchases">🛒 רכש</button>
+  <button data-p="quotes">📋 הצעות</button>
+  <button data-p="vendors">📞 ספקים</button>
+  <button data-p="decisions">📝 החלטות</button>
+  <button data-p="issues">⚠️ חריגות <span class="badge" id="navIssues">0</span></button>
+  <button data-p="risks">🚨 סיכונים</button>
+  <button data-p="plans">📐 תוכניות</button>
+</nav>
+
+<!-- ============ MAIN ============ -->
+<main id="appMain" style="display:none">
+  <div id="searchResults" style="display:none"></div>
+
+  <!-- OVERVIEW -->
+  <div class="pnl on" id="p-overview">
+    <div class="kpi-grid" id="kpiGrid"></div>
+    <h3 style="font-size:.95rem;margin:20px 0 10px">🔥 דחוף השבוע</h3>
+    <div id="todayList"></div>
+    <h3 style="font-size:.95rem;margin:24px 0 10px">💰 תשלומים מתקרבים</h3>
+    <div id="upcomingPayments"></div>
+    <h3 style="font-size:.95rem;margin:24px 0 10px">🚨 סיכונים פתוחים</h3>
+    <div id="openRisksOv"></div>
+  </div>
+
+  <!-- TASKS -->
+  <div class="pnl" id="p-tasks">
+    <h2>משימות</h2>
+    <p class="pnl-sub">ניהול כל המשימות לפי שלב, אחראי ועדיפות</p>
+    <div class="filters" id="taskFilters"></div>
+    <button class="btn btn-sm" style="margin-bottom:14px" onclick="openTaskForm()">➕ משימה חדשה</button>
+    <div id="taskList"></div>
+  </div>
+
+  <!-- BUDGET -->
+  <div class="pnl" id="p-budget">
+    <h2>תקציב מול ביצוע</h2>
+    <p class="pnl-sub">תקציב 900,000 ₪ · 4 סטטוסים: שולם / התחייבות / הצעה / חריגה</p>
+    <div class="kpi-grid" id="budgetKpis"></div>
+    <h3 style="font-size:.9rem;margin:20px 0 10px">פירוט הוצאות</h3>
+    <button class="btn btn-sm" style="margin-bottom:14px" onclick="openExpenseForm()">➕ הוצאה חדשה</button>
+    <div class="filters" id="expFilters"></div>
+    <div class="tbl-wrap"><table class="tbl" id="expTable"></table></div>
+  </div>
+
+  <!-- PURCHASES -->
+  <div class="pnl" id="p-purchases">
+    <h2>רכש — חומרים ומוצרים</h2>
+    <p class="pnl-sub">פריטים שצריך לרכוש בנפרד מהקבלן · סטטוס הזמנה ואספקה</p>
+    <button class="btn btn-sm" style="margin-bottom:14px" onclick="openPurchaseForm()">➕ פריט חדש</button>
+    <div id="purchaseList"></div>
+  </div>
+
+  <!-- QUOTES -->
+  <div class="pnl" id="p-quotes">
+    <h2>השוואת הצעות מחיר</h2>
+    <p class="pnl-sub">השוואה בין ספקים לפי קטגוריה — VRF, פרקט, נגרות, סניטריה, תאורה</p>
+    <button class="btn btn-sm" style="margin-bottom:14px" onclick="openQuoteForm()">➕ הצעה חדשה</button>
+    <div id="quotesByCategory"></div>
+  </div>
+
+  <!-- VENDORS -->
+  <div class="pnl" id="p-vendors">
+    <h2>ספקים ואנשי קשר</h2>
+    <p class="pnl-sub">לחיצה על טלפון = חיוג ישיר. לחיצה על מייל = פתיחת מייל.</p>
+    <button class="btn btn-sm" style="margin-bottom:14px" onclick="openVendorForm()">➕ ספק חדש</button>
+    <div id="vendorList"></div>
+  </div>
+
+  <!-- DECISIONS -->
+  <div class="pnl" id="p-decisions">
+    <h2>לוג החלטות</h2>
+    <p class="pnl-sub">תיעוד החלטות עיצוביות וטכניות לאורך הפרויקט</p>
+    <button class="btn btn-sm" style="margin-bottom:14px" onclick="openDecisionForm()">➕ החלטה חדשה</button>
+    <div id="decisionList"></div>
+  </div>
+
+  <!-- ISSUES -->
+  <div class="pnl" id="p-issues">
+    <h2>חריגות ושינויים (Change Orders)</h2>
+    <p class="pnl-sub">תוספות ושינויים תוך כדי שיפוץ — עם השפעה על התקציב</p>
+    <button class="btn btn-sm" style="margin-bottom:14px" onclick="openIssueForm()">➕ חריגה חדשה</button>
+    <div id="issueList"></div>
+  </div>
+
+  <!-- RISKS -->
+  <div class="pnl" id="p-risks">
+    <h2>סיכונים וחסמים</h2>
+    <p class="pnl-sub">בעיות פתוחות שעלולות לעכב את הפרויקט</p>
+    <button class="btn btn-sm" style="margin-bottom:14px" onclick="openRiskForm()">➕ סיכון חדש</button>
+    <div id="riskList"></div>
+  </div>
+
+  <!-- PLANS -->
+  <div class="pnl" id="p-plans">
+    <h2>תוכניות והדמיות</h2>
+    <p class="pnl-sub">תשריט אדריכלי, תוכניות סמל, הדמיות תלת-ממד</p>
+    <div id="plansGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px"></div>
+  </div>
+</main>
+
+<!-- ============ MODAL ============ -->
+<div class="modal" id="modal">
+  <div class="modal-box">
+    <h3 id="modalTitle"></h3>
+    <div id="modalBody"></div>
+    <div style="display:flex;gap:8px;margin-top:14px;justify-content:flex-end">
+      <button class="btn btn-gh" onclick="closeModal()">ביטול</button>
+      <button class="btn" id="modalSave">שמור</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ============ CONFIG ============
+const SUPABASE_URL='https://qugryaepyffgqiaycauk.supabase.co';
+const SUPABASE_KEY='sb_publishable_C7bVr2-3RwkdmCVabGYVTQ_P6LQ7GFY';
+const STORAGE_BASE=SUPABASE_URL+'/storage/v1/object/public/renovation-files/';
+const sb=supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+
+// ============ STATE ============
+const state={user:null,tasks:[],expenses:[],vendors:[],purchases:[],quotes:[],decisions:[],issues:[],risks:[],photos:[]};
+const TABLES=['vendors','tasks','expenses','purchases','quotes','decisions','issues','risks','photos'];
+
+// Project constants
+const PROJECT={
+  budget:900000,
+  contractor:{name:'מולי סגל',total:495322,paid:0,startDate:'2026-04-12',duration:65},
+  endDateEstimate:'2026-06-16'
+};
+
+// ============ UTILS ============
+const fmt=n=>n==null?'—':Math.round(n).toLocaleString('he-IL');
+const fmtK=n=>n==null?'—':(n/1000).toFixed(0)+'K';
+const fmtDate=d=>d?new Date(d).toLocaleDateString('he-IL'):'—';
+const daysFromNow=d=>{if(!d)return null;const t=new Date(d)-new Date();return Math.ceil(t/86400000)};
+const $=id=>document.getElementById(id);
+const esc=s=>(s||'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+
+// ============ AUTH ============
+async function sendMagicLink(){
+  const email=$('authEmail').value.trim();
+  if(!email)return;
+  $('authBtn').disabled=true;
+  $('authMsg').textContent='שולח...';
+  const{error}=await sb.auth.signInWithOtp({email,options:{emailRedirectTo:window.location.href}});
+  if(error){$('authMsg').style.color='var(--red)';$('authMsg').textContent=error.message;$('authBtn').disabled=false}
+  else{$('authMsg').style.color='var(--grn)';$('authMsg').textContent='✓ נשלח קישור! בדקי את המייל'}
+}
+async function logout(){await sb.auth.signOut();location.reload()}
+
+async function checkAuth(){
+  const{data:{session}}=await sb.auth.getSession();
+  if(session){state.user=session.user;showApp();await loadAll();renderAll()}
+  else{$('authScreen').style.display='flex'}
+}
+
+function showApp(){
+  $('authScreen').style.display='none';
+  $('appHdr').style.display='block';
+  $('appNav').style.display='flex';
+  $('appMain').style.display='block';
+  $('userChip').textContent=state.user.email;
+  $('hdrSub').textContent=`קבלן: מולי סגל · התחלה 12.04.2026 · 65 ימי עבודה`;
+}
+
+// ============ DATA LOAD ============
+async function loadAll(){
+  const proms=TABLES.map(t=>sb.from(t).select('*').order('id'));
+  const results=await Promise.all(proms);
+  TABLES.forEach((t,i)=>{state[t]=results[i].data||[]});
+}
+async function reload(table){
+  const{data}=await sb.from(table).select('*').order('id');
+  state[table]=data||[];renderAll();
+}
+async function save(table,record){
+  if(record.id){const{error}=await sb.from(table).update(record).eq('id',record.id);if(error)alert(error.message)}
+  else{const{error}=await sb.from(table).insert(record);if(error)alert(error.message)}
+  await reload(table);
+}
+async function del(table,id){
+  if(!confirm('למחוק?'))return;
+  await sb.from(table).delete().eq('id',id);
+  await reload(table);
+}
+
+// ============ NAV ============
+document.addEventListener('click',e=>{
+  const b=e.target.closest('.nav button');if(!b)return;
+  document.querySelectorAll('.nav button').forEach(x=>x.classList.remove('on'));
+  document.querySelectorAll('.pnl').forEach(x=>x.classList.remove('on'));
+  b.classList.add('on');$('p-'+b.dataset.p).classList.add('on');
+});
+
+// ============ RENDER: KPIs ============
+function renderKPIs(){
+  const tDone=state.tasks.filter(t=>t.status==='done').length;
+  const tTot=state.tasks.length;
+  const tLate=state.tasks.filter(t=>t.status!=='done'&&t.due_date&&daysFromNow(t.due_date)<0).length;
+  const expPaid=state.expenses.filter(e=>e.status==='paid').reduce((s,e)=>s+ +e.amount,0);
+  const expCommit=state.expenses.filter(e=>e.status==='committed').reduce((s,e)=>s+ +e.amount,0);
+  const issuesOpen=state.issues.filter(i=>i.status==='open').length;
+  const issuesCost=state.issues.filter(i=>i.status!=='rejected').reduce((s,i)=>s+ +i.cost_delta,0);
+  const remain=PROJECT.budget-expPaid-expCommit-issuesCost;
+  const startDays=daysFromNow(PROJECT.contractor.startDate);
+  const endDays=daysFromNow(PROJECT.endDateEstimate);
+
+  $('kpiGrid').innerHTML=`
+    <div class="kpi blu"><div class="kpi-lbl">ימים לתחילת שיפוץ</div><div class="kpi-val">${startDays>0?startDays:'בעיצומו'}</div><div class="kpi-sub">12.04.2026</div></div>
+    <div class="kpi pnk"><div class="kpi-lbl">ימים לסיום משוער</div><div class="kpi-val">${endDays>0?endDays:'—'}</div><div class="kpi-sub">~16.06.2026</div></div>
+    <div class="kpi grn"><div class="kpi-lbl">משימות</div><div class="kpi-val">${tDone}/${tTot}</div><div class="kpi-sub">${tTot?Math.round(tDone/tTot*100):0}% הושלם${tLate?' · '+tLate+' באיחור':''}</div></div>
+    <div class="kpi"><div class="kpi-lbl">שולם בפועל</div><div class="kpi-val num">${fmtK(expPaid)}</div><div class="kpi-sub">מתוך ${fmtK(PROJECT.budget)}</div></div>
+    <div class="kpi ylw"><div class="kpi-lbl">התחייבות פתוחה</div><div class="kpi-val num">${fmtK(expCommit)}</div><div class="kpi-sub">חוזים חתומים</div></div>
+    <div class="kpi ${remain<0?'red':'grn'}"><div class="kpi-lbl">יתרה לתקציב</div><div class="kpi-val num">${fmtK(remain)}</div><div class="kpi-sub">${remain<0?'חריגה!':'זמין'}</div></div>
+    <div class="kpi ${issuesOpen?'red':''}"><div class="kpi-lbl">חריגות פתוחות</div><div class="kpi-val">${issuesOpen}</div><div class="kpi-sub">השפעה: ${fmt(issuesCost)} ₪</div></div>
+  `;
+
+  // Today list
+  const urgent=state.tasks.filter(t=>t.status!=='done'&&(t.priority==='urgent'||(t.due_date&&daysFromNow(t.due_date)<=7))).slice(0,5);
+  $('todayList').innerHTML=urgent.length?urgent.map(t=>renderTaskCard(t)).join(''):'<div class="empty">אין משימות דחופות 🎉</div>';
+
+  // Upcoming payments (committed expenses without paid_date or with future paid_date)
+  const upcoming=state.expenses.filter(e=>e.status==='committed').slice(0,5);
+  $('upcomingPayments').innerHTML=upcoming.length?upcoming.map(e=>{
+    const v=state.vendors.find(v=>v.id===e.vendor_id);
+    return `<div class="card"><div class="card-main"><div class="card-title">${esc(e.item||'תשלום')} — ${fmt(e.amount)} ₪</div><div class="card-meta">${v?esc(v.name):''}${e.milestone?' · '+esc(e.milestone):''}</div></div></div>`;
+  }).join(''):'<div class="empty">אין תשלומים בהמתנה</div>';
+
+  // Open risks
+  const risks=state.risks.filter(r=>r.status==='open').slice(0,5);
+  $('openRisksOv').innerHTML=risks.length?risks.map(r=>`<div class="card"><div class="card-main"><div class="card-title">${esc(r.title)}</div><div class="card-meta"><span class="tag ${r.severity==='high'?'urgent':r.severity==='med'?'high':'med'}">${r.severity}</span>${r.owner?' · '+esc(r.owner):''}${r.due_date?' · '+fmtDate(r.due_date):''}</div></div></div>`).join(''):'<div class="empty">אין סיכונים פתוחים</div>';
+
+  // Nav badges
+  $('navTasks').textContent=tTot-tDone;
+  $('navIssues').textContent=issuesOpen;
+}
+
+// ============ RENDER: TASKS ============
+let taskFilter='all';
+function renderTaskCard(t){
+  const v=t.vendor_id?state.vendors.find(x=>x.id===t.vendor_id):null;
+  const late=t.status!=='done'&&t.due_date&&daysFromNow(t.due_date)<0;
+  return `<div class="card"><div class="chk ${t.status==='done'?'done':''}" onclick="toggleTask(${t.id})"></div><div class="card-main"><div class="card-title task-title ${t.status==='done'?'done':''}">${esc(t.title)}</div><div class="card-meta">${t.priority?`<span class="tag ${t.priority}">${t.priority==='urgent'?'דחוף':t.priority==='high'?'גבוה':'רגיל'}</span>`:''}${t.owner?'<span>'+esc(t.owner)+'</span>':''}${v?'<span>📞 '+esc(v.name)+'</span>':''}${t.chapter?'<span>'+esc(t.chapter)+'</span>':''}${t.due_text||t.due_date?'<span>'+(late?'⚠️ ':'')+esc(t.due_text||fmtDate(t.due_date))+'</span>':''}${late?'<span class="tag late">באיחור</span>':''}</div></div><div class="card-actions"><button class="btn btn-sm btn-gh" onclick="openTaskForm(${t.id})">✎</button><button class="btn btn-sm btn-gh" onclick="del(\\'tasks\\',${t.id})">✕</button></div></div>`.replace(/\\'/g,"'");
+}
+async function toggleTask(id){
+  const t=state.tasks.find(x=>x.id===id);if(!t)return;
+  await save('tasks',{id,status:t.status==='done'?'open':'done',done_at:t.status==='done'?null:new Date().toISOString()});
+}
+function renderTasks(){
+  const filters=[['all','הכל'],['urgent','דחוף'],['open','פתוח'],['done','הושלם'],['late','באיחור']];
+  $('taskFilters').innerHTML=filters.map(([k,l])=>`<button class="${taskFilter===k?'on':''}" onclick="taskFilter='${k}';renderTasks()">${l}</button>`).join('');
+  let list=state.tasks.slice();
+  if(taskFilter==='urgent')list=list.filter(t=>t.priority==='urgent'&&t.status!=='done');
+  else if(taskFilter==='open')list=list.filter(t=>t.status!=='done');
+  else if(taskFilter==='done')list=list.filter(t=>t.status==='done');
+  else if(taskFilter==='late')list=list.filter(t=>t.status!=='done'&&t.due_date&&daysFromNow(t.due_date)<0);
+  // sort: urgent first, then by due
+  list.sort((a,b)=>{
+    if(a.status==='done'&&b.status!=='done')return 1;
+    if(b.status==='done'&&a.status!=='done')return -1;
+    const pp={urgent:0,high:1,med:2};
+    return (pp[a.priority]??3)-(pp[b.priority]??3);
+  });
+  $('taskList').innerHTML=list.length?list.map(renderTaskCard).join(''):'<div class="empty">אין משימות</div>';
+}
+
+// ============ RENDER: BUDGET ============
+function renderBudget(){
+  const cat={paid:0,committed:0,quoted:0,change_order:0};
+  state.expenses.forEach(e=>{cat[e.status]=(cat[e.status]||0)+ +e.amount});
+  const issuesCost=state.issues.filter(i=>i.status!=='rejected').reduce((s,i)=>s+ +i.cost_delta,0);
+  const total=cat.paid+cat.committed+issuesCost;
+  const remain=PROJECT.budget-total;
+  $('budgetKpis').innerHTML=`
+    <div class="kpi grn"><div class="kpi-lbl">שולם בפועל</div><div class="kpi-val num">${fmt(cat.paid)}</div></div>
+    <div class="kpi ylw"><div class="kpi-lbl">התחייבות פתוחה</div><div class="kpi-val num">${fmt(cat.committed)}</div></div>
+    <div class="kpi blu"><div class="kpi-lbl">הצעות בלבד</div><div class="kpi-val num">${fmt(cat.quoted)}</div></div>
+    <div class="kpi red"><div class="kpi-lbl">חריגות מאושרות</div><div class="kpi-val num">${fmt(issuesCost)}</div></div>
+    <div class="kpi ${remain<0?'red':'grn'}"><div class="kpi-lbl">יתרה</div><div class="kpi-val num">${fmt(remain)}</div><div class="kpi-sub">מ-${fmtK(PROJECT.budget)}</div></div>
+  `;
+  let rows=`<thead><tr><th>פריט</th><th>ספק</th><th>סכום</th><th>סטטוס</th><th>קטגוריה</th><th>תאריך</th><th></th></tr></thead><tbody>`;
+  state.expenses.forEach(e=>{
+    const v=state.vendors.find(x=>x.id===e.vendor_id);
+    const stTag={paid:'done',committed:'high',quoted:'med',change_order:'urgent'}[e.status]||'med';
+    const stLbl={paid:'שולם',committed:'התחייבות',quoted:'הצעה',change_order:'חריגה'}[e.status]||e.status;
+    rows+=`<tr><td>${esc(e.item||'—')}</td><td>${v?esc(v.name):'—'}</td><td class="num">${fmt(e.amount)} ₪</td><td><span class="tag ${stTag}">${stLbl}</span></td><td>${esc(e.category||'—')}</td><td>${fmtDate(e.paid_date)}</td><td><button class="btn btn-sm btn-gh" onclick="openExpenseForm(${e.id})">✎</button></td></tr>`;
+  });
+  rows+='</tbody>';
+  $('expTable').innerHTML=rows;
+}
+
+// ============ RENDER: VENDORS ============
+function renderVendors(){
+  $('vendorList').innerHTML=state.vendors.length?state.vendors.map(v=>`<div class="card"><div class="card-main"><div class="card-title">${esc(v.name)}</div><div class="card-meta">${esc(v.role||'')}${v.category?' · '+esc(v.category):''}</div></div><div class="card-actions">${v.phone?`<a class="btn btn-sm" href="tel:${esc(v.phone)}">📞</a>`:''}${v.email?`<a class="btn btn-sm btn-gh" href="mailto:${esc(v.email)}">📧</a>`:''}<button class="btn btn-sm btn-gh" onclick="openVendorForm(${v.id})">✎</button></div></div>`).join(''):'<div class="empty">אין ספקים. הוסיפי את הראשון.</div>';
+}
+
+// ============ RENDER: PURCHASES ============
+function renderPurchases(){
+  $('purchaseList').innerHTML=state.purchases.length?state.purchases.map(p=>{
+    const v=state.vendors.find(x=>x.id===p.vendor_id);
+    return `<div class="card"><div class="card-main"><div class="card-title">${esc(p.item)}${p.model?' — '+esc(p.model):''}</div><div class="card-meta">${v?'📞 '+esc(v.name):''}${p.price?' · <span class="num">'+fmt(p.price)+' ₪</span>':''}${p.category?' · '+esc(p.category):''}<span class="tag ${p.delivered?'done':p.ordered?'high':'med'}">${p.delivered?'סופק':p.ordered?'הוזמן':'ממתין'}</span></div></div><div class="card-actions"><button class="btn btn-sm btn-gh" onclick="openPurchaseForm(${p.id})">✎</button><button class="btn btn-sm btn-gh" onclick="del('purchases',${p.id})">✕</button></div></div>`;
+  }).join(''):'<div class="empty">אין פריטי רכש</div>';
+}
+
+// ============ RENDER: QUOTES (grouped by category) ============
+function renderQuotes(){
+  const byCat={};
+  state.quotes.forEach(q=>{(byCat[q.category||'אחר']=byCat[q.category||'אחר']||[]).push(q)});
+  $('quotesByCategory').innerHTML=Object.keys(byCat).length?Object.entries(byCat).map(([cat,qs])=>{
+    qs.sort((a,b)=>(+a.amount||0)-(+b.amount||0));
+    const cheapest=qs[0];
+    return `<div class="sec open"><div class="sec-h" onclick="this.parentElement.classList.toggle('open')"><h3>📋 ${esc(cat)} <span class="tag med">${qs.length} הצעות</span></h3><span class="chv">▼</span></div><div class="sec-b"><div class="tbl-wrap"><table class="tbl"><thead><tr><th>ספק</th><th>סכום</th><th>תוקף</th><th>הערות</th><th></th></tr></thead><tbody>${qs.map(q=>{const v=state.vendors.find(x=>x.id===q.vendor_id);return `<tr ${q===cheapest?'style="background:var(--grn-bg)"':''}><td>${v?esc(v.name):'—'}${q===cheapest?' 🏆':''}</td><td class="num">${fmt(q.amount)} ₪</td><td>${fmtDate(q.valid_until)}</td><td>${esc(q.notes||'')}</td><td><button class="btn btn-sm btn-gh" onclick="del('quotes',${q.id})">✕</button></td></tr>`}).join('')}</tbody></table></div></div></div>`;
+  }).join(''):'<div class="empty">אין הצעות מחיר. הוסיפי את הראשונה.</div>';
+}
+
+// ============ RENDER: DECISIONS / ISSUES / RISKS ============
+function renderDecisions(){
+  $('decisionList').innerHTML=state.decisions.length?state.decisions.map(d=>`<div class="card"><div class="card-main"><div class="card-title">${esc(d.title)}</div>${d.details?'<div style="font-size:.78rem;color:var(--t2);margin-top:4px">'+esc(d.details)+'</div>':''}<div class="card-meta">${fmtDate(d.decision_date)}${d.decided_by?' · '+esc(d.decided_by):''}${d.chapter?' · '+esc(d.chapter):''}</div></div><div class="card-actions"><button class="btn btn-sm btn-gh" onclick="del('decisions',${d.id})">✕</button></div></div>`).join(''):'<div class="empty">אין החלטות מתועדות</div>';
+}
+function renderIssues(){
+  $('issueList').innerHTML=state.issues.length?state.issues.map(i=>{
+    const stCls={open:'urgent',approved:'high',done:'done',rejected:'med'}[i.status]||'med';
+    const stLbl={open:'פתוח',approved:'אושר',done:'בוצע',rejected:'נדחה'}[i.status]||i.status;
+    return `<div class="card"><div class="card-main"><div class="card-title">${esc(i.description)}</div><div class="card-meta">${fmtDate(i.issue_date)} · <span class="num" style="color:${i.cost_delta>=0?'var(--ylw)':'var(--grn)'}">${i.cost_delta>=0?'+':''}${fmt(i.cost_delta)} ₪</span> <span class="tag ${stCls}">${stLbl}</span></div></div><div class="card-actions"><button class="btn btn-sm btn-gh" onclick="cycleIssue(${i.id})">→</button><button class="btn btn-sm btn-gh" onclick="del('issues',${i.id})">✕</button></div></div>`;
+  }).join(''):'<div class="empty">אין חריגות</div>';
+}
+async function cycleIssue(id){
+  const i=state.issues.find(x=>x.id===id);if(!i)return;
+  const next={open:'approved',approved:'done',done:'rejected',rejected:'open'};
+  await save('issues',{id,status:next[i.status]});
+}
+function renderRisks(){
+  $('riskList').innerHTML=state.risks.length?state.risks.map(r=>{
+    const sevCls={high:'urgent',med:'high',low:'med'}[r.severity]||'med';
+    return `<div class="card"><div class="card-main"><div class="card-title">${esc(r.title)}</div>${r.notes?'<div style="font-size:.78rem;color:var(--t2);margin-top:4px">'+esc(r.notes)+'</div>':''}<div class="card-meta"><span class="tag ${sevCls}">${r.severity}</span>${r.owner?' · '+esc(r.owner):''}${r.due_date?' · '+fmtDate(r.due_date):''} · ${r.status}</div></div><div class="card-actions"><button class="btn btn-sm btn-gh" onclick="del('risks',${r.id})">✕</button></div></div>`;
+  }).join(''):'<div class="empty">אין סיכונים פתוחים</div>';
+}
+
+// ============ RENDER: PLANS ============
+const PLANS=[
+  ['architect-plan.png','תשריט אדריכלי — מיטל שחר'],
+  ['apartment-parquet.jpg','הדמיית דירה — פרקט'],
+  ['apartment-tiles.jpg','הדמיית דירה — אריחים'],
+  ['kitchen-render-front.png','מטבח — מבט חזיתי'],
+  ['kitchen-render-overview.png','מטבח — מבט כללי'],
+  ['kitchen-render-gemini.png','מטבח — Gemini AI'],
+  ['kitchen-front-20-island.png','חזית 20 — אי (350)'],
+  ['kitchen-front-17-sink.png','חזית 17 — כיור (351)'],
+  ['kitchen-front-30-pantry.png','חזית 30 — מזווה (83)'],
+  ['kitchen-front-9-oven.png','חזית 9 — תנור (263)'],
+  ['kitchen-floor-plan.png','תוכנית רצפה (410)'],
+];
+function renderPlans(){
+  $('plansGrid').innerHTML=PLANS.map(([f,l])=>`<a href="${STORAGE_BASE}${f}" target="_blank" style="text-decoration:none;color:inherit"><div style="background:var(--s1);border:1px solid var(--bd);border-radius:10px;overflow:hidden"><img src="${STORAGE_BASE}${f}" loading="lazy" style="width:100%;height:160px;object-fit:cover;display:block" onerror="this.style.opacity=0.3"><div style="padding:9px 12px;font-size:.78rem">${l}</div></div></a>`).join('');
+}
+
+// ============ RENDER ALL ============
+function renderAll(){
+  renderKPIs();renderTasks();renderBudget();renderVendors();renderPurchases();
+  renderQuotes();renderDecisions();renderIssues();renderRisks();renderPlans();
+}
+
+// ============ FORMS / MODAL ============
+let modalSaveFn=null;
+function openModal(title,body,saveFn){
+  $('modalTitle').textContent=title;
+  $('modalBody').innerHTML=body;
+  modalSaveFn=saveFn;
+  $('modal').classList.add('on');
+}
+function closeModal(){$('modal').classList.remove('on');modalSaveFn=null}
+$('modalSave').onclick=async()=>{if(modalSaveFn)await modalSaveFn();closeModal()};
+
+const vendorOpts=()=>state.vendors.map(v=>`<option value="${v.id}">${esc(v.name)}</option>`).join('');
+
+function openTaskForm(id){
+  const t=id?state.tasks.find(x=>x.id===id):{};
+  openModal(id?'עריכת משימה':'משימה חדשה',`
+    <div class="form-row">
+      <input id="f_title" placeholder="כותרת המשימה" value="${esc(t.title||'')}">
+      <select id="f_priority"><option value="urgent" ${t.priority==='urgent'?'selected':''}>דחוף</option><option value="high" ${t.priority==='high'?'selected':''}>גבוה</option><option value="med" ${t.priority==='med'?'selected':''}>רגיל</option></select>
+      <input id="f_owner" placeholder="אחראי (שלומית/ארז/שניהם)" value="${esc(t.owner||'')}">
+      <input id="f_due" type="date" value="${t.due_date||''}">
+      <input id="f_chapter" placeholder="פרק/קטגוריה" value="${esc(t.chapter||'')}">
+      <select id="f_vendor"><option value="">— ספק קשור (אופציונלי) —</option>${vendorOpts()}</select>
+    </div>`,async()=>{
+    const r={title:$('f_title').value,priority:$('f_priority').value,owner:$('f_owner').value,due_date:$('f_due').value||null,chapter:$('f_chapter').value,vendor_id:$('f_vendor').value||null};
+    if(id)r.id=id;
+    if(state.vendors.find(v=>v.id==r.vendor_id))r.vendor_id=+r.vendor_id;
+    await save('tasks',r);
+  });
+  if(t.vendor_id)$('f_vendor').value=t.vendor_id;
+}
+
+function openExpenseForm(id){
+  const e=id?state.expenses.find(x=>x.id===id):{status:'paid'};
+  openModal(id?'עריכת הוצאה':'הוצאה חדשה',`
+    <div class="form-row">
+      <input id="f_item" placeholder="פריט/תיאור" value="${esc(e.item||'')}">
+      <input id="f_amount" type="number" placeholder="סכום ₪" value="${e.amount||''}">
+      <select id="f_status"><option value="paid" ${e.status==='paid'?'selected':''}>שולם</option><option value="committed" ${e.status==='committed'?'selected':''}>התחייבות פתוחה</option><option value="quoted" ${e.status==='quoted'?'selected':''}>הצעה בלבד</option><option value="change_order" ${e.status==='change_order'?'selected':''}>חריגה</option></select>
+      <select id="f_vendor"><option value="">— ספק —</option>${vendorOpts()}</select>
+      <input id="f_category" placeholder="קטגוריה" value="${esc(e.category||'')}">
+      <input id="f_milestone" placeholder="אבן דרך" value="${esc(e.milestone||'')}">
+      <input id="f_paid_date" type="date" value="${e.paid_date||''}">
+    </div>`,async()=>{
+    const r={item:$('f_item').value,amount:+$('f_amount').value||0,status:$('f_status').value,vendor_id:+$('f_vendor').value||null,category:$('f_category').value,milestone:$('f_milestone').value,paid_date:$('f_paid_date').value||null};
+    if(id)r.id=id;await save('expenses',r);
+  });
+  if(e.vendor_id)$('f_vendor').value=e.vendor_id;
+}
+
+function openVendorForm(id){
+  const v=id?state.vendors.find(x=>x.id===id):{};
+  openModal(id?'עריכת ספק':'ספק חדש',`<div class="form-row"><input id="f_name" placeholder="שם" value="${esc(v.name||'')}"><input id="f_role" placeholder="תפקיד" value="${esc(v.role||'')}"><input id="f_category" placeholder="קטגוריה (VRF/פרקט/...)" value="${esc(v.category||'')}"><input id="f_phone" placeholder="טלפון" value="${esc(v.phone||'')}"><input id="f_email" placeholder="מייל" value="${esc(v.email||'')}"><textarea id="f_notes" placeholder="הערות" rows="2">${esc(v.notes||'')}</textarea></div>`,
+    async()=>{const r={name:$('f_name').value,role:$('f_role').value,category:$('f_category').value,phone:$('f_phone').value,email:$('f_email').value,notes:$('f_notes').value};if(id)r.id=id;await save('vendors',r)});
+}
+
+function openPurchaseForm(id){
+  const p=id?state.purchases.find(x=>x.id===id):{};
+  openModal(id?'עריכת רכש':'רכש חדש',`<div class="form-row"><input id="f_item" placeholder="פריט" value="${esc(p.item||'')}"><input id="f_model" placeholder="דגם" value="${esc(p.model||'')}"><input id="f_price" type="number" placeholder="מחיר ₪" value="${p.price||''}"><select id="f_vendor"><option value="">— ספק —</option>${vendorOpts()}</select><input id="f_category" placeholder="קטגוריה" value="${esc(p.category||'')}"><label style="font-size:.8rem"><input type="checkbox" id="f_ordered" ${p.ordered?'checked':''}> הוזמן</label><label style="font-size:.8rem"><input type="checkbox" id="f_delivered" ${p.delivered?'checked':''}> סופק</label></div>`,
+    async()=>{const r={item:$('f_item').value,model:$('f_model').value,price:+$('f_price').value||null,vendor_id:+$('f_vendor').value||null,category:$('f_category').value,ordered:$('f_ordered').checked,delivered:$('f_delivered').checked};if(id)r.id=id;await save('purchases',r)});
+  if(p.vendor_id)$('f_vendor').value=p.vendor_id;
+}
+
+function openQuoteForm(){
+  openModal('הצעת מחיר חדשה',`<div class="form-row"><input id="f_category" placeholder="קטגוריה (VRF/פרקט/נגרות/...)"><select id="f_vendor"><option value="">— ספק —</option>${vendorOpts()}</select><input id="f_amount" type="number" placeholder="סכום ₪"><input id="f_valid" type="date" placeholder="תוקף"><textarea id="f_notes" placeholder="הערות" rows="2"></textarea></div>`,
+    async()=>{await save('quotes',{category:$('f_category').value,vendor_id:+$('f_vendor').value||null,amount:+$('f_amount').value||0,valid_until:$('f_valid').value||null,notes:$('f_notes').value})});
+}
+
+function openDecisionForm(){
+  openModal('החלטה חדשה',`<div class="form-row"><input id="f_title" placeholder="ההחלטה"><textarea id="f_details" placeholder="פרטים" rows="2"></textarea><input id="f_by" placeholder="מי החליט"><input id="f_chapter" placeholder="פרק קשור"><input id="f_date" type="date" value="${new Date().toISOString().slice(0,10)}"></div>`,
+    async()=>{await save('decisions',{title:$('f_title').value,details:$('f_details').value,decided_by:$('f_by').value,chapter:$('f_chapter').value,decision_date:$('f_date').value})});
+}
+
+function openIssueForm(){
+  openModal('חריגה חדשה',`<div class="form-row"><textarea id="f_desc" placeholder="תיאור" rows="2"></textarea><input id="f_cost" type="number" placeholder="עלות נוספת ₪ (או שלילי להפחתה)"><select id="f_status"><option value="open">פתוח</option><option value="approved">אושר</option></select></div>`,
+    async()=>{await save('issues',{description:$('f_desc').value,cost_delta:+$('f_cost').value||0,status:$('f_status').value,issue_date:new Date().toISOString().slice(0,10)})});
+}
+
+function openRiskForm(){
+  openModal('סיכון חדש',`<div class="form-row"><input id="f_title" placeholder="כותרת"><select id="f_sev"><option value="high">גבוה</option><option value="med" selected>בינוני</option><option value="low">נמוך</option></select><input id="f_owner" placeholder="אחראי"><input id="f_due" type="date"><textarea id="f_notes" placeholder="הערות" rows="2"></textarea></div>`,
+    async()=>{await save('risks',{title:$('f_title').value,severity:$('f_sev').value,owner:$('f_owner').value,due_date:$('f_due').value||null,notes:$('f_notes').value,status:'open'})});
+}
+
+// ============ GLOBAL SEARCH ============
+function globalSearchHandler(){
+  const q=$('globalSearch').value.trim().toLowerCase();
+  const sr=$('searchResults');
+  if(!q){sr.style.display='none';document.querySelectorAll('.pnl').forEach((p,i)=>p.style.display='');document.querySelector('.pnl.on').style.display='block';return}
+  document.querySelectorAll('.pnl').forEach(p=>p.style.display='none');
+  sr.style.display='block';
+  const hit=(s)=>(s||'').toString().toLowerCase().includes(q);
+  const sections=[
+    ['משימות',state.tasks.filter(t=>hit(t.title)||hit(t.owner)||hit(t.chapter))],
+    ['ספקים',state.vendors.filter(v=>hit(v.name)||hit(v.role)||hit(v.category))],
+    ['הוצאות',state.expenses.filter(e=>hit(e.item)||hit(e.category))],
+    ['רכש',state.purchases.filter(p=>hit(p.item)||hit(p.model))],
+    ['החלטות',state.decisions.filter(d=>hit(d.title)||hit(d.details))],
+    ['חריגות',state.issues.filter(i=>hit(i.description))],
+    ['סיכונים',state.risks.filter(r=>hit(r.title)||hit(r.notes))],
+  ];
+  sr.innerHTML='<h2>תוצאות חיפוש</h2>'+sections.filter(([n,l])=>l.length).map(([n,l])=>`<h3 style="margin:16px 0 8px;font-size:.9rem">${n} (${l.length})</h3>`+l.map(item=>`<div class="card"><div class="card-main"><div class="card-title">${esc(item.title||item.name||item.item||item.description||'')}</div></div></div>`).join('')).join('')||'<div class="empty">אין תוצאות</div>';
+}
+
+// ============ INIT ============
+sb.auth.onAuthStateChange((event,session)=>{
+  if(event==='SIGNED_IN'&&!state.user){state.user=session.user;showApp();loadAll().then(renderAll)}
+});
+checkAuth();
+</script>
+</body>
+</html>
