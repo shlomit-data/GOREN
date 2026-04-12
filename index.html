@@ -213,9 +213,18 @@ main{padding:20px;max-width:1400px;margin:0 auto}
     <h2>תקציב מול ביצוע</h2>
     <p class="pnl-sub">תקציב 900,000 ₪ · 4 סטטוסים: שולם / התחייבות / הצעה / חריגה</p>
     <div class="kpi-grid" id="budgetKpis"></div>
-    <h3 style="font-size:.9rem;margin:20px 0 10px">פירוט הוצאות</h3>
-    <button class="btn btn-sm" style="margin-bottom:14px" onclick="openExpenseForm()">➕ הוצאה חדשה</button>
-    <div class="filters" id="expFilters"></div>
+    <h3 style="font-size:.9rem;margin:20px 0 10px">📅 יומן הוצאות — פריסה חודשית</h3>
+    <div id="monthlyJournal" style="background:var(--s1);border:1px solid var(--bd);border-radius:10px;padding:12px;margin-bottom:20px;overflow-x:auto"></div>
+    <h3 style="font-size:.9rem;margin:20px 0 10px">פירוט הוצאות — כל השורות</h3>
+    <div style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap;align-items:center">
+      <button class="btn btn-sm" onclick="openExpenseForm()">➕ הוצאה</button>
+      <select id="fltVendor" onchange="renderBudget()" style="font-family:Heebo;padding:6px 10px;background:var(--s2);border:1px solid var(--bd);border-radius:6px;color:var(--t1);font-size:.78rem"></select>
+      <select id="fltCategory" onchange="renderBudget()" style="font-family:Heebo;padding:6px 10px;background:var(--s2);border:1px solid var(--bd);border-radius:6px;color:var(--t1);font-size:.78rem"></select>
+      <select id="fltMonth" onchange="renderBudget()" style="font-family:Heebo;padding:6px 10px;background:var(--s2);border:1px solid var(--bd);border-radius:6px;color:var(--t1);font-size:.78rem"></select>
+      <select id="fltStatus" onchange="renderBudget()" style="font-family:Heebo;padding:6px 10px;background:var(--s2);border:1px solid var(--bd);border-radius:6px;color:var(--t1);font-size:.78rem"><option value="">כל הסטטוסים</option><option value="paid">שולם</option><option value="committed">התחייבות</option><option value="quoted">הצעה</option><option value="change_order">חריגה</option></select>
+      <button class="btn btn-sm btn-gh" onclick="clearFilters()">✕ נקה</button>
+    </div>
+    <div style="font-size:.78rem;color:var(--t2);margin-bottom:10px" id="fltSummary"></div>
     <div class="tbl-wrap"><table class="tbl" id="expTable"></table></div>
   </div>
 
@@ -323,7 +332,7 @@ const TABLES=['vendors','tasks','expenses','purchases','quotes','decisions','iss
 
 // Project constants
 const PROJECT={
-  budget:900000,
+  budget:1000000,
   contractor:{name:'מולי סגל',total:495322,paid:0,startDate:'2026-04-12',duration:65},
   endDateEstimate:'2026-06-16'
 };
@@ -333,6 +342,18 @@ const fmt=n=>n==null?'—':Math.round(n).toLocaleString('he-IL');
 const fmtK=n=>n==null?'—':(n/1000).toFixed(0)+'K';
 const fmtDate=d=>d?new Date(d).toLocaleDateString('he-IL'):'—';
 const daysFromNow=d=>{if(!d)return null;const t=new Date(d)-new Date();return Math.ceil(t/86400000)};
+function businessDaysBetween(d1,d2){
+  const from=new Date(d1),to=new Date(d2);
+  if(from>=to)return 0;
+  let n=0,cur=new Date(from);
+  while(cur<to){
+    const day=cur.getDay();
+    if(day!==5&&day!==6)n++; // skip Friday(5) + Saturday(6)
+    cur.setDate(cur.getDate()+1);
+  }
+  return n;
+}
+
 const $=id=>document.getElementById(id);
 const esc=s=>(s||'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
 
@@ -408,8 +429,8 @@ function renderKPIs(){
   const endDays=daysFromNow(PROJECT.endDateEstimate);
 
   $('kpiGrid').innerHTML=`
-    <div class="kpi blu"><div class="kpi-lbl">ימים לתחילת שיפוץ</div><div class="kpi-val">${startDays>0?startDays:'בעיצומו'}</div><div class="kpi-sub">12.04.2026</div></div>
-    <div class="kpi pnk"><div class="kpi-lbl">ימים לסיום משוער</div><div class="kpi-val">${endDays>0?endDays:'—'}</div><div class="kpi-sub">~16.06.2026</div></div>
+    <div class="kpi blu"><div class="kpi-lbl">ימי עסקים לתחילה</div><div class="kpi-val">${startDays>0?businessDaysBetween(new Date(),PROJECT.contractor.startDate):'בעיצומו'}</div><div class="kpi-sub">12.04.2026</div></div>
+    <div class="kpi pnk"><div class="kpi-lbl">ימי עסקים לסיום</div><div class="kpi-val">${businessDaysBetween(new Date(),PROJECT.endDateEstimate)||'—'}</div><div class="kpi-sub">~16.06.2026 · א-ה בלבד</div></div>
     <div class="kpi grn"><div class="kpi-lbl">משימות</div><div class="kpi-val">${tDone}/${tTot}</div><div class="kpi-sub">${tTot?Math.round(tDone/tTot*100):0}% הושלם${tLate?' · '+tLate+' באיחור':''}</div></div>
     <div class="kpi"><div class="kpi-lbl">שולם בפועל</div><div class="kpi-val num">${fmtK(expPaid)}</div><div class="kpi-sub">מתוך ${fmtK(PROJECT.budget)}</div></div>
     <div class="kpi ylw"><div class="kpi-lbl">התחייבות פתוחה</div><div class="kpi-val num">${fmtK(expCommit)}</div><div class="kpi-sub">חוזים חתומים</div></div>
@@ -467,7 +488,133 @@ function renderTasks(){
 }
 
 // ============ RENDER: BUDGET ============
+function clearFilters(){['fltVendor','fltCategory','fltMonth','fltStatus'].forEach(id=>{const el=$(id);if(el)el.value=''});renderBudget()}
+
+function renderMonthlyJournal(){
+  const el=$('monthlyJournal');if(!el)return;
+  // Group expenses by vendor, then by month
+  const byVendor={};
+  state.expenses.forEach(e=>{
+    const vId=e.vendor_id||0;
+    const v=state.vendors.find(x=>x.id===vId);
+    const vName=v?v.name:(e.item||'אחר');
+    if(!byVendor[vName])byVendor[vName]={vendor:v,rows:[],total:0};
+    byVendor[vName].rows.push(e);
+    byVendor[vName].total+=(+e.amount||0);
+  });
+  // Collect all months present (paid_date or inferred)
+  const allMonths=new Set();
+  state.expenses.forEach(e=>{if(e.paid_date)allMonths.add(e.paid_date.slice(0,7))});
+  // Always include project months
+  ['2025-12','2026-01','2026-02','2026-03','2026-04','2026-05','2026-06','2026-07','2026-08'].forEach(m=>allMonths.add(m));
+  const months=[...allMonths].sort();
+  const monthLabel=m=>{const[y,mm]=m.split('-');const names=['ינו','פבר','מרץ','אפר','מאי','יונ','יול','אוג','ספט','אוק','נוב','דצמ'];return names[+mm-1]+' '+y.slice(2)};
+  // Build table
+  let h='<table class="tbl" style="min-width:900px"><thead><tr><th></th><th>הוצאה</th><th>ספק</th>';
+  months.forEach(m=>{h+='<th style="text-align:center;min-width:80px">'+monthLabel(m)+'</th>'});
+  h+='<th style="text-align:center">סה״כ</th></tr></thead><tbody>';
+  Object.entries(byVendor).sort((a,b)=>b[1].total-a[1].total).forEach(([name,data])=>{
+    const v=data.vendor;
+    const cat=v?v.category||v.role||'':'';
+    h+=`<tr><td style="width:28px"><button class="btn btn-sm btn-gh" style="padding:2px 6px;font-size:.68rem" title="לא למחוק ישירות — ערוך שורות">⋯</button></td><td style="font-weight:600">${esc(name)}</td><td style="font-size:.72rem;color:var(--t2)">${esc(cat)}</td>`;
+    let rowTotal=0;
+    months.forEach(m=>{
+      const monthRows=data.rows.filter(r=>r.paid_date&&r.paid_date.startsWith(m));
+      const sum=monthRows.reduce((s,r)=>s+ +r.amount,0);
+      rowTotal+=sum;
+      if(sum>0){
+        const allPaid=monthRows.every(r=>r.status==='paid');
+        const color=allPaid?'var(--grn)':'var(--ylw)';
+        const icon=allPaid?'✓':'○';
+        h+=`<td style="text-align:center;font-family:Rubik;color:${color};font-size:.78rem">${icon} ${fmt(sum)}</td>`;
+      }else{
+        h+='<td style="text-align:center;color:var(--t3)">—</td>';
+      }
+    });
+    // Also show non-dated (committed without paid_date)
+    const undated=data.rows.filter(r=>!r.paid_date).reduce((s,r)=>s+ +r.amount,0);
+    const grandTotal=rowTotal+undated;
+    h+=`<td style="text-align:center;font-family:Rubik;font-weight:700;color:var(--ac2)">${fmt(grandTotal)}${undated>0?'<div style="font-size:.62rem;color:var(--t3);font-weight:400">'+fmt(undated)+' ללא תאריך</div>':''}</td></tr>`;
+  });
+  // Monthly totals row
+  h+='<tr style="background:var(--s2);font-weight:700;border-top:2px solid var(--ac)"><td></td><td>סה״כ חודשי</td><td></td>';
+  let grandTotalAll=0;
+  months.forEach(m=>{
+    const sum=state.expenses.filter(e=>e.paid_date&&e.paid_date.startsWith(m)).reduce((s,e)=>s+ +e.amount,0);
+    grandTotalAll+=sum;
+    h+=`<td style="text-align:center;font-family:Rubik;color:var(--ac2)">${sum>0?fmt(sum):'—'}</td>`;
+  });
+  const undatedGrand=state.expenses.filter(e=>!e.paid_date).reduce((s,e)=>s+ +e.amount,0);
+  h+=`<td style="text-align:center;font-family:Rubik;color:var(--ac2)">${fmt(grandTotalAll+undatedGrand)}</td></tr>`;
+  h+='</tbody></table>';
+  el.innerHTML=h;
+}
+
+
+
+function renderMonthlyJournal(){
+  const el=$('monthlyJournal');if(!el)return;
+  // Group expenses by vendor, then by month
+  const byVendor={};
+  state.expenses.forEach(e=>{
+    const vId=e.vendor_id||0;
+    const v=state.vendors.find(x=>x.id===vId);
+    const vName=v?v.name:(e.item||'אחר');
+    if(!byVendor[vName])byVendor[vName]={vendor:v,rows:[],total:0};
+    byVendor[vName].rows.push(e);
+    byVendor[vName].total+=(+e.amount||0);
+  });
+  // Collect all months present (paid_date or inferred)
+  const allMonths=new Set();
+  state.expenses.forEach(e=>{if(e.paid_date)allMonths.add(e.paid_date.slice(0,7))});
+  // Always include project months
+  ['2025-12','2026-01','2026-02','2026-03','2026-04','2026-05','2026-06','2026-07','2026-08'].forEach(m=>allMonths.add(m));
+  const months=[...allMonths].sort();
+  const monthLabel=m=>{const[y,mm]=m.split('-');const names=['ינו','פבר','מרץ','אפר','מאי','יונ','יול','אוג','ספט','אוק','נוב','דצמ'];return names[+mm-1]+' '+y.slice(2)};
+  // Build table
+  let h='<table class="tbl" style="min-width:900px"><thead><tr><th></th><th>הוצאה</th><th>ספק</th>';
+  months.forEach(m=>{h+='<th style="text-align:center;min-width:80px">'+monthLabel(m)+'</th>'});
+  h+='<th style="text-align:center">סה״כ</th></tr></thead><tbody>';
+  Object.entries(byVendor).sort((a,b)=>b[1].total-a[1].total).forEach(([name,data])=>{
+    const v=data.vendor;
+    const cat=v?v.category||v.role||'':'';
+    h+=`<tr><td style="width:28px"><button class="btn btn-sm btn-gh" style="padding:2px 6px;font-size:.68rem" title="לא למחוק ישירות — ערוך שורות">⋯</button></td><td style="font-weight:600">${esc(name)}</td><td style="font-size:.72rem;color:var(--t2)">${esc(cat)}</td>`;
+    let rowTotal=0;
+    months.forEach(m=>{
+      const monthRows=data.rows.filter(r=>r.paid_date&&r.paid_date.startsWith(m));
+      const sum=monthRows.reduce((s,r)=>s+ +r.amount,0);
+      rowTotal+=sum;
+      if(sum>0){
+        const allPaid=monthRows.every(r=>r.status==='paid');
+        const color=allPaid?'var(--grn)':'var(--ylw)';
+        const icon=allPaid?'✓':'○';
+        h+=`<td style="text-align:center;font-family:Rubik;color:${color};font-size:.78rem">${icon} ${fmt(sum)}</td>`;
+      }else{
+        h+='<td style="text-align:center;color:var(--t3)">—</td>';
+      }
+    });
+    // Also show non-dated (committed without paid_date)
+    const undated=data.rows.filter(r=>!r.paid_date).reduce((s,r)=>s+ +r.amount,0);
+    const grandTotal=rowTotal+undated;
+    h+=`<td style="text-align:center;font-family:Rubik;font-weight:700;color:var(--ac2)">${fmt(grandTotal)}${undated>0?'<div style="font-size:.62rem;color:var(--t3);font-weight:400">'+fmt(undated)+' ללא תאריך</div>':''}</td></tr>`;
+  });
+  // Monthly totals row
+  h+='<tr style="background:var(--s2);font-weight:700;border-top:2px solid var(--ac)"><td></td><td>סה״כ חודשי</td><td></td>';
+  let grandTotalAll=0;
+  months.forEach(m=>{
+    const sum=state.expenses.filter(e=>e.paid_date&&e.paid_date.startsWith(m)).reduce((s,e)=>s+ +e.amount,0);
+    grandTotalAll+=sum;
+    h+=`<td style="text-align:center;font-family:Rubik;color:var(--ac2)">${sum>0?fmt(sum):'—'}</td>`;
+  });
+  const undatedGrand=state.expenses.filter(e=>!e.paid_date).reduce((s,e)=>s+ +e.amount,0);
+  h+=`<td style="text-align:center;font-family:Rubik;color:var(--ac2)">${fmt(grandTotalAll+undatedGrand)}</td></tr>`;
+  h+='</tbody></table>';
+  el.innerHTML=h;
+}
+
 function renderBudget(){
+  renderMonthlyJournal();
+  // KPIs based on ALL expenses (not filtered)
   const cat={paid:0,committed:0,quoted:0,change_order:0};
   state.expenses.forEach(e=>{cat[e.status]=(cat[e.status]||0)+ +e.amount});
   const issuesCost=state.issues.filter(i=>i.status!=='rejected').reduce((s,i)=>s+ +i.cost_delta,0);
@@ -480,8 +627,25 @@ function renderBudget(){
     <div class="kpi red"><div class="kpi-lbl">חריגות מאושרות</div><div class="kpi-val num">${fmt(issuesCost)}</div></div>
     <div class="kpi ${remain<0?'red':'grn'}"><div class="kpi-lbl">יתרה</div><div class="kpi-val num">${fmt(remain)}</div><div class="kpi-sub">מ-${fmtK(PROJECT.budget)}</div></div>
   `;
+  // Populate filter dropdowns
+  const vendors=[...new Set(state.expenses.map(e=>e.vendor_id).filter(Boolean))].map(id=>state.vendors.find(v=>v.id===id)).filter(Boolean);
+  const cats=[...new Set(state.expenses.map(e=>e.category).filter(Boolean))];
+  const months=[...new Set(state.expenses.map(e=>e.paid_date?e.paid_date.slice(0,7):null).filter(Boolean))].sort().reverse();
+  const fv=$('fltVendor'),fc=$('fltCategory'),fm=$('fltMonth');
+  if(fv&&!fv.dataset.init){fv.innerHTML='<option value="">כל הספקים</option>'+vendors.map(v=>`<option value="${v.id}">${esc(v.name)}</option>`).join('');fv.dataset.init='1'}
+  if(fc&&!fc.dataset.init){fc.innerHTML='<option value="">כל הקטגוריות</option>'+cats.map(c=>`<option value="${esc(c)}">${esc(c)}</option>`).join('');fc.dataset.init='1'}
+  if(fm&&!fm.dataset.init){fm.innerHTML='<option value="">כל החודשים</option>'+months.map(m=>`<option value="${m}">${m}</option>`).join('');fm.dataset.init='1'}
+  // Apply filters
+  const vId=fv?fv.value:'',cat2=fc?fc.value:'',mo=fm?fm.value:'',st=$('fltStatus')?$('fltStatus').value:'';
+  let list=state.expenses.slice();
+  if(vId)list=list.filter(e=>e.vendor_id==vId);
+  if(cat2)list=list.filter(e=>e.category===cat2);
+  if(mo)list=list.filter(e=>e.paid_date&&e.paid_date.startsWith(mo));
+  if(st)list=list.filter(e=>e.status===st);
+  const fTotal=list.reduce((s,e)=>s+ +e.amount,0);
+  $('fltSummary').textContent=`מציג ${list.length} שורות · סה״כ ${fmt(fTotal)} ₪`;
   let rows=`<thead><tr><th>פריט</th><th>ספק</th><th>סכום</th><th>סטטוס</th><th>קטגוריה</th><th>תאריך</th><th></th></tr></thead><tbody>`;
-  state.expenses.forEach(e=>{
+  list.forEach(e=>{
     const v=state.vendors.find(x=>x.id===e.vendor_id);
     const stTag={paid:'done',committed:'high',quoted:'med',change_order:'urgent'}[e.status]||'med';
     const stLbl={paid:'שולם',committed:'התחייבות',quoted:'הצעה',change_order:'חריגה'}[e.status]||e.status;
@@ -665,7 +829,16 @@ function openVendorForm(id){
 function openPurchaseForm(id){
   const p=id?state.purchases.find(x=>x.id===id):{};
   openModal(id?'עריכת רכש':'רכש חדש',`<div class="form-row"><input id="f_item" placeholder="פריט" value="${esc(p.item||'')}"><input id="f_model" placeholder="דגם" value="${esc(p.model||'')}"><input id="f_price" type="number" placeholder="מחיר ₪" value="${p.price||''}"><select id="f_vendor"><option value="">— ספק —</option>${vendorOpts()}</select><input id="f_category" placeholder="קטגוריה" value="${esc(p.category||'')}"><label style="font-size:.8rem"><input type="checkbox" id="f_ordered" ${p.ordered?'checked':''}> הוזמן</label><label style="font-size:.8rem"><input type="checkbox" id="f_delivered" ${p.delivered?'checked':''}> סופק</label></div>`,
-    async()=>{const r={item:$('f_item').value,model:$('f_model').value,price:+$('f_price').value||null,vendor_id:+$('f_vendor').value||null,category:$('f_category').value,ordered:$('f_ordered').checked,delivered:$('f_delivered').checked};if(id)r.id=id;await save('purchases',r)});
+    async()=>{const r={item:$('f_item').value,model:$('f_model').value,price:+$('f_price').value||null,vendor_id:+$('f_vendor').value||null,category:$('f_category').value,ordered:$('f_ordered').checked,delivered:$('f_delivered').checked};if(id)r.id=id;
+    const wasDelivered=id?state.purchases.find(p=>p.id===id)?.delivered:false;
+    await save('purchases',r);
+    // If newly delivered and has price → create paid expense automatically
+    if(r.delivered&&!wasDelivered&&r.price){
+      if(confirm(`הפריט "${r.item}" סומן כסופק. להוסיף ל-${r.price} ₪ להוצאות כ״שולם״?`)){
+        await save('expenses',{vendor_id:r.vendor_id,item:r.item+(r.model?' — '+r.model:''),amount:r.price,status:'paid',category:r.category||'רכש',milestone:'סופק מרכש',paid_date:new Date().toISOString().slice(0,10)});
+      }
+    }
+  });
   if(p.vendor_id)$('f_vendor').value=p.vendor_id;
 }
 
