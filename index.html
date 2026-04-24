@@ -23,6 +23,15 @@ body{margin:0;font-family:'Heebo',sans-serif;background:var(--bg);color:var(--t1
 .num{font-family:'Rubik',sans-serif}
 
 /* ============ AUTH SCREEN ============ */
+
+.auth-box input:-webkit-autofill,
+.auth-box input:-webkit-autofill:focus{
+-webkit-box-shadow:0 0 0 50px var(–s2) inset;
+-webkit-text-fill-color:var(–t1);
+caret-color:var(–t1);
+border-color:var(–bd);
+}
+
 .auth{position:fixed;inset:0;background:var(–bg);display:flex;align-items:center;justify-content:center;padding:20px;z-index:1000;overflow-y:auto}
 .auth-box{background:var(–s1);border:1px solid var(–bd);border-radius:14px;padding:24px;max-width:400px;width:100%;margin:auto}
 .auth-box h1{margin:0 0 8px;font-size:1.3rem}
@@ -149,9 +158,9 @@ main{padding:14px}
   <div class="auth-box">
     <h1>🏗 שיפוץ נחמני 13</h1>
     <p>התחברות עם אימייל וסיסמה</p>
-    <input type="email" id="authEmail" placeholder="shlomit.joy@gmail.com" autocomplete="email">
-    <input type="password" id="authPass" placeholder="סיסמה" autocomplete="current-password" onkeydown="if(event.key==='Enter')login()">
-    <button id="authBtn" onclick="login()">כניסה</button>
+    <input type="email" id="authEmail" placeholder="shlomit.joy@gmail.com" autocomplete="email" style="width:100%;padding:12px;background:#1a2333;border:1px solid #2a3548;border-radius:8px;color:#e7ecf3;font-family:inherit;font-size:.9rem;-webkit-appearance:none">
+    <input type="password" id="authPass" placeholder="סיסמה" autocomplete="current-password" style="width:100%;padding:12px;background:#1a2333;border:1px solid #2a3548;border-radius:8px;color:#e7ecf3;font-family:inherit;font-size:.9rem;-webkit-appearance:none" onkeydown="if(event.key==='Enter')login()">
+    <button id="authBtn" onclick="login()" style="width:100%;padding:14px;background:#7c5cff;color:#fff;border:none;border-radius:8px;font-family:inherit;font-weight:700;cursor:pointer;font-size:1rem;-webkit-appearance:none;appearance:none">כניסה</button>
     <div class="auth-msg" id="authMsg"></div>
   </div>
 </div>
