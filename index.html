@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+
 <html lang="he" dir="rtl">
 <head>
 <meta charset="UTF-8">
@@ -22,127 +23,128 @@ body{margin:0;font-family:'Heebo',sans-serif;background:var(--bg);color:var(--t1
 .num{font-family:'Rubik',sans-serif}
 
 /* ============ AUTH SCREEN ============ */
-.auth{position:fixed;inset:0;background:var(--bg);display:flex;align-items:center;justify-content:center;padding:20px;z-index:1000}
-.auth-box{background:var(--s1);border:1px solid var(--bd);border-radius:14px;padding:32px;max-width:400px;width:100%}
+.auth{position:fixed;inset:0;background:var(–bg);display:flex;align-items:center;justify-content:center;padding:20px;z-index:1000}
+.auth-box{background:var(–s1);border:1px solid var(–bd);border-radius:14px;padding:32px;max-width:400px;width:100%}
 .auth-box h1{margin:0 0 8px;font-size:1.3rem}
-.auth-box p{color:var(--t2);font-size:.85rem;margin:0 0 20px}
-.auth-box input{width:100%;padding:12px;background:var(--s2);border:1px solid var(--bd);border-radius:8px;color:var(--t1);font-family:inherit;font-size:.9rem;margin-bottom:10px}
-.auth-box button{width:100%;padding:12px;background:var(--ac);color:#fff;border:none;border-radius:8px;font-family:inherit;font-weight:600;cursor:pointer;font-size:.9rem}
+.auth-box p{color:var(–t2);font-size:.85rem;margin:0 0 20px}
+.auth-box input{width:100%;padding:12px;background:var(–s2);border:1px solid var(–bd);border-radius:8px;color:var(–t1);font-family:inherit;font-size:.9rem;margin-bottom:10px}
+.auth-box button{width:100%;padding:12px;background:var(–ac);color:#fff;border:none;border-radius:8px;font-family:inherit;font-weight:600;cursor:pointer;font-size:.9rem}
 .auth-box button:disabled{opacity:.5}
-.auth-msg{font-size:.8rem;color:var(--grn);margin-top:10px;text-align:center;min-height:18px}
+.auth-msg{font-size:.8rem;color:var(–grn);margin-top:10px;text-align:center;min-height:18px}
 
 /* ============ LAYOUT ============ */
-.hdr{background:var(--s1);border-bottom:1px solid var(--bd);padding:14px 20px;position:sticky;top:0;z-index:50}
+.hdr{background:var(–s1);border-bottom:1px solid var(–bd);padding:14px 20px;position:sticky;top:0;z-index:50}
 .hdr-row{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
 .hdr h1{margin:0;font-size:1.1rem;font-weight:700}
-.hdr-sub{font-size:.74rem;color:var(--t2);margin-top:2px}
+.hdr-sub{font-size:.74rem;color:var(–t2);margin-top:2px}
 .hdr-actions{display:flex;gap:8px;align-items:center}
-.search-box{background:var(--s2);border:1px solid var(--bd);border-radius:8px;padding:7px 12px;color:var(--t1);font-family:inherit;font-size:.82rem;width:200px}
-.btn-icon{background:var(--s2);border:1px solid var(--bd);color:var(--t2);width:34px;height:34px;border-radius:8px;cursor:pointer;font-size:.9rem}
-.user-chip{font-size:.72rem;color:var(--t2);padding:6px 10px;background:var(--s2);border-radius:6px}
+.search-box{background:var(–s2);border:1px solid var(–bd);border-radius:8px;padding:7px 12px;color:var(–t1);font-family:inherit;font-size:.82rem;width:200px}
+.btn-icon{background:var(–s2);border:1px solid var(–bd);color:var(–t2);width:34px;height:34px;border-radius:8px;cursor:pointer;font-size:.9rem}
+.user-chip{font-size:.72rem;color:var(–t2);padding:6px 10px;background:var(–s2);border-radius:6px}
 
-.nav{background:var(--s1);border-bottom:1px solid var(--bd);padding:8px 20px;display:flex;gap:6px;overflow-x:auto;position:sticky;top:60px;z-index:40}
-.nav button{font-family:inherit;background:transparent;border:1px solid transparent;color:var(--t2);padding:8px 14px;border-radius:8px;cursor:pointer;font-size:.82rem;font-weight:500;white-space:nowrap;display:flex;align-items:center;gap:6px}
-.nav button:hover{background:var(--s2);color:var(--t1)}
-.nav button.on{background:var(--s2);border-color:var(--bd);color:var(--ac2);font-weight:600}
-.nav .badge{background:var(--red);color:#fff;font-size:.65rem;padding:1px 6px;border-radius:8px;font-weight:700;min-width:16px;text-align:center}
+.nav{background:var(–s1);border-bottom:1px solid var(–bd);padding:8px 20px;display:flex;gap:6px;overflow-x:auto;position:sticky;top:60px;z-index:40}
+.nav button{font-family:inherit;background:transparent;border:1px solid transparent;color:var(–t2);padding:8px 14px;border-radius:8px;cursor:pointer;font-size:.82rem;font-weight:500;white-space:nowrap;display:flex;align-items:center;gap:6px}
+.nav button:hover{background:var(–s2);color:var(–t1)}
+.nav button.on{background:var(–s2);border-color:var(–bd);color:var(–ac2);font-weight:600}
+.nav .badge{background:var(–red);color:#fff;font-size:.65rem;padding:1px 6px;border-radius:8px;font-weight:700;min-width:16px;text-align:center}
 
 main{padding:20px;max-width:1400px;margin:0 auto}
 .pnl{display:none}.pnl.on{display:block}
 .pnl h2{margin:0 0 6px;font-size:1.05rem}
-.pnl-sub{color:var(--t2);font-size:.78rem;margin:0 0 16px}
+.pnl-sub{color:var(–t2);font-size:.78rem;margin:0 0 16px}
 
 /* ============ KPI CARDS ============ */
 .kpi-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px;margin-bottom:20px}
-.kpi{background:var(--s1);border:1px solid var(--bd);border-radius:11px;padding:14px;border-right:3px solid var(--ac)}
-.kpi.grn{border-right-color:var(--grn)}
-.kpi.ylw{border-right-color:var(--ylw)}
-.kpi.red{border-right-color:var(--red)}
-.kpi.blu{border-right-color:var(--blu)}
-.kpi.pnk{border-right-color:var(--pnk)}
-.kpi-lbl{font-size:.72rem;color:var(--t2);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px}
-.kpi-val{font-family:'Rubik',sans-serif;font-size:1.5rem;font-weight:700;line-height:1.1}
-.kpi-sub{font-size:.7rem;color:var(--t3);margin-top:4px}
+.kpi{background:var(–s1);border:1px solid var(–bd);border-radius:11px;padding:14px;border-right:3px solid var(–ac)}
+.kpi.grn{border-right-color:var(–grn)}
+.kpi.ylw{border-right-color:var(–ylw)}
+.kpi.red{border-right-color:var(–red)}
+.kpi.blu{border-right-color:var(–blu)}
+.kpi.pnk{border-right-color:var(–pnk)}
+.kpi-lbl{font-size:.72rem;color:var(–t2);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px}
+.kpi-val{font-family:‘Rubik’,sans-serif;font-size:1.5rem;font-weight:700;line-height:1.1}
+.kpi-sub{font-size:.7rem;color:var(–t3);margin-top:4px}
 
 /* ============ FORMS / INPUTS ============ */
 .form-row{display:grid;gap:8px;margin-bottom:14px}
-.form-row input,.form-row select,.form-row textarea{font-family:inherit;padding:9px 11px;background:var(--s2);border:1px solid var(--bd);border-radius:7px;color:var(--t1);font-size:.83rem}
-.form-row input:focus,.form-row select:focus{outline:none;border-color:var(--ac)}
-.btn{font-family:inherit;padding:9px 16px;background:var(--ac);color:#fff;border:none;border-radius:7px;font-weight:600;cursor:pointer;font-size:.83rem}
+.form-row input,.form-row select,.form-row textarea{font-family:inherit;padding:9px 11px;background:var(–s2);border:1px solid var(–bd);border-radius:7px;color:var(–t1);font-size:.83rem}
+.form-row input:focus,.form-row select:focus{outline:none;border-color:var(–ac)}
+.btn{font-family:inherit;padding:9px 16px;background:var(–ac);color:#fff;border:none;border-radius:7px;font-weight:600;cursor:pointer;font-size:.83rem}
 .btn:hover{filter:brightness(1.1)}
 .btn-sm{padding:5px 11px;font-size:.74rem}
-.btn-gh{background:var(--s2);border:1px solid var(--bd);color:var(--t1)}
+.btn-gh{background:var(–s2);border:1px solid var(–bd);color:var(–t1)}
 
 /* ============ LISTS / CARDS ============ */
-.card{background:var(--s1);border:1px solid var(--bd);border-radius:10px;padding:13px 16px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
+.card{background:var(–s1);border:1px solid var(–bd);border-radius:10px;padding:13px 16px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
 .card-main{flex:1;min-width:0}
 .card-title{font-weight:600;font-size:.9rem;margin-bottom:3px}
-.card-meta{font-size:.72rem;color:var(--t3);display:flex;gap:8px;flex-wrap:wrap;margin-top:4px}
+.card-meta{font-size:.72rem;color:var(–t3);display:flex;gap:8px;flex-wrap:wrap;margin-top:4px}
 .card-actions{display:flex;gap:6px;flex-shrink:0}
 .tag{display:inline-block;font-size:.66rem;padding:2px 7px;border-radius:5px;font-weight:600}
-.tag.urgent{background:var(--red-bg);color:var(--red)}
-.tag.high{background:var(--ylw-bg);color:var(--ylw)}
-.tag.med{background:var(--blu-bg);color:var(--blu)}
-.tag.done{background:var(--grn-bg);color:var(--grn)}
-.tag.late{background:var(--red-bg);color:var(--red);animation:pulse 2s infinite}
+.tag.urgent{background:var(–red-bg);color:var(–red)}
+.tag.high{background:var(–ylw-bg);color:var(–ylw)}
+.tag.med{background:var(–blu-bg);color:var(–blu)}
+.tag.done{background:var(–grn-bg);color:var(–grn)}
+.tag.late{background:var(–red-bg);color:var(–red);animation:pulse 2s infinite}
 @keyframes pulse{50%{opacity:.5}}
 
 /* checkbox */
-.chk{width:20px;height:20px;border-radius:5px;border:2px solid var(--bd);cursor:pointer;flex-shrink:0;margin-top:2px;display:flex;align-items:center;justify-content:center;background:var(--s2)}
-.chk.done{background:var(--grn);border-color:var(--grn)}
-.chk.done::after{content:'✓';color:#fff;font-size:.78rem;font-weight:700}
-.task-title.done{text-decoration:line-through;color:var(--t3)}
+.chk{width:20px;height:20px;border-radius:5px;border:2px solid var(–bd);cursor:pointer;flex-shrink:0;margin-top:2px;display:flex;align-items:center;justify-content:center;background:var(–s2)}
+.chk.done{background:var(–grn);border-color:var(–grn)}
+.chk.done::after{content:‘✓’;color:#fff;font-size:.78rem;font-weight:700}
+.task-title.done{text-decoration:line-through;color:var(–t3)}
 
 /* ============ FILTERS ============ */
 .filters{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px}
-.filters button{font-family:inherit;font-size:.74rem;padding:5px 11px;border-radius:6px;border:1px solid var(--bd);background:transparent;color:var(--t2);cursor:pointer}
-.filters button.on{background:var(--ac);border-color:var(--ac);color:#fff}
+.filters button{font-family:inherit;font-size:.74rem;padding:5px 11px;border-radius:6px;border:1px solid var(–bd);background:transparent;color:var(–t2);cursor:pointer}
+.filters button.on{background:var(–ac);border-color:var(–ac);color:#fff}
 
 /* ============ SECTIONS (collapsible) ============ */
-.sec{background:var(--s1);border:1px solid var(--bd);border-radius:10px;margin-bottom:10px;overflow:hidden}
+.sec{background:var(–s1);border:1px solid var(–bd);border-radius:10px;margin-bottom:10px;overflow:hidden}
 .sec-h{padding:12px 16px;cursor:pointer;display:flex;justify-content:space-between;align-items:center}
 .sec-h h3{margin:0;font-size:.9rem;font-weight:600;display:flex;align-items:center;gap:8px}
 .sec-b{padding:0 16px 14px;display:none}
 .sec.open .sec-b{display:block}
-.chv{transition:transform .2s;color:var(--t3)}
+.chv{transition:transform .2s;color:var(–t3)}
 .sec.open .chv{transform:rotate(180deg)}
 
 /* ============ TABLES ============ */
 .tbl{width:100%;border-collapse:collapse;font-size:.8rem}
-.tbl th{text-align:right;padding:8px;background:var(--s2);color:var(--t2);font-weight:600;font-size:.72rem;text-transform:uppercase}
-.tbl td{padding:9px 8px;border-top:1px solid var(--bd)}
+.tbl th{text-align:right;padding:8px;background:var(–s2);color:var(–t2);font-weight:600;font-size:.72rem;text-transform:uppercase}
+.tbl td{padding:9px 8px;border-top:1px solid var(–bd)}
 .tbl-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
 
 /* ============ EMPTY STATE ============ */
-.empty{text-align:center;color:var(--t3);padding:30px 20px;font-size:.85rem}
+.empty{text-align:center;color:var(–t3);padding:30px 20px;font-size:.85rem}
 
 /* ============ MOBILE ============ */
 @media(max-width:640px){
-  .hdr{padding:12px 14px}.hdr h1{font-size:1rem}
-  .hdr-actions{width:100%;margin-top:8px}
-  .search-box{flex:1;width:auto}
-  .nav{padding:6px 14px;top:90px}
-  .nav button{padding:6px 11px;font-size:.76rem}
-  main{padding:14px}
-  .kpi-val{font-size:1.25rem}
-  .card{padding:11px 13px}
+.hdr{padding:12px 14px}.hdr h1{font-size:1rem}
+.hdr-actions{width:100%;margin-top:8px}
+.search-box{flex:1;width:auto}
+.nav{padding:6px 14px;top:90px}
+.nav button{padding:6px 11px;font-size:.76rem}
+main{padding:14px}
+.kpi-val{font-size:1.25rem}
+.card{padding:11px 13px}
 }
 
-
-#fab{position:fixed;bottom:24px;left:24px;width:56px;height:56px;border-radius:50%;background:var(--ac);color:#fff;border:none;font-size:1.8rem;cursor:pointer;box-shadow:0 4px 16px rgba(124,92,255,.4);z-index:90;display:flex;align-items:center;justify-content:center;font-weight:300;line-height:1}
-#fab:hover{transform:scale(1.05);background:var(--ac2)}
+#fab{position:fixed;bottom:24px;left:24px;width:56px;height:56px;border-radius:50%;background:var(–ac);color:#fff;border:none;font-size:1.8rem;cursor:pointer;box-shadow:0 4px 16px rgba(124,92,255,.4);z-index:90;display:flex;align-items:center;justify-content:center;font-weight:300;line-height:1}
+#fab:hover{transform:scale(1.05);background:var(–ac2)}
 @media(max-width:640px){#fab{bottom:16px;left:16px;width:52px;height:52px}}
 
 /* ============ MODAL ============ */
 .modal{position:fixed;inset:0;background:rgba(0,0,0,.7);display:none;align-items:center;justify-content:center;z-index:200;padding:20px}
 .modal.on{display:flex}
-.modal-box{background:var(--s1);border:1px solid var(--bd);border-radius:14px;padding:24px;max-width:500px;width:100%;max-height:90vh;overflow-y:auto}
+.modal-box{background:var(–s1);border:1px solid var(–bd);border-radius:14px;padding:24px;max-width:500px;width:100%;max-height:90vh;overflow-y:auto}
 .modal-box h3{margin:0 0 14px}
 </style>
+
 </head>
 <body>
 
 <!-- ============ AUTH SCREEN ============ -->
+
 <div class="auth" id="authScreen">
   <div class="auth-box">
     <h1>🏗 שיפוץ נחמני 13</h1>
@@ -155,6 +157,7 @@ main{padding:20px;max-width:1400px;margin:0 auto}
 </div>
 
 <!-- ============ HEADER ============ -->
+
 <div class="hdr" id="appHdr" style="display:none">
   <div class="hdr-row">
     <div>
@@ -170,6 +173,7 @@ main{padding:20px;max-width:1400px;margin:0 auto}
 </div>
 
 <!-- ============ NAV ============ -->
+
 <nav class="nav" id="appNav" style="display:none">
   <button class="on" data-p="overview">📊 סקירה</button>
   <button data-p="tasks">✓ משימות <span class="badge" id="navTasks">0</span></button>
@@ -185,10 +189,12 @@ main{padding:20px;max-width:1400px;margin:0 auto}
 </nav>
 
 <!-- ============ MAIN ============ -->
+
 <main id="appMain" style="display:none">
   <div id="searchResults" style="display:none"></div>
 
   <!-- OVERVIEW -->
+
   <div class="pnl on" id="p-overview">
     <div class="kpi-grid" id="kpiGrid"></div>
     <h3 style="font-size:.95rem;margin:20px 0 10px">🔥 דחוף השבוע</h3>
@@ -200,6 +206,7 @@ main{padding:20px;max-width:1400px;margin:0 auto}
   </div>
 
   <!-- TASKS -->
+
   <div class="pnl" id="p-tasks">
     <h2>משימות</h2>
     <p class="pnl-sub">ניהול כל המשימות לפי שלב, אחראי ועדיפות</p>
@@ -209,6 +216,7 @@ main{padding:20px;max-width:1400px;margin:0 auto}
   </div>
 
   <!-- BUDGET -->
+
   <div class="pnl" id="p-budget">
     <h2>תקציב מול ביצוע</h2>
     <p class="pnl-sub">תקציב 900,000 ₪ · 4 סטטוסים: שולם / התחייבות / הצעה / חריגה</p>
@@ -229,6 +237,7 @@ main{padding:20px;max-width:1400px;margin:0 auto}
   </div>
 
   <!-- PURCHASES -->
+
   <div class="pnl" id="p-purchases">
     <h2>רכש — חומרים ומוצרים</h2>
     <p class="pnl-sub">פריטים שצריך לרכוש בנפרד מהקבלן · סטטוס הזמנה ואספקה</p>
@@ -237,6 +246,7 @@ main{padding:20px;max-width:1400px;margin:0 auto}
   </div>
 
   <!-- QUOTES -->
+
   <div class="pnl" id="p-quotes">
     <h2>השוואת הצעות מחיר</h2>
     <p class="pnl-sub">השוואה בין ספקים לפי קטגוריה — VRF, פרקט, נגרות, סניטריה, תאורה</p>
@@ -245,6 +255,7 @@ main{padding:20px;max-width:1400px;margin:0 auto}
   </div>
 
   <!-- VENDORS -->
+
   <div class="pnl" id="p-vendors">
     <h2>ספקים ואנשי קשר</h2>
     <p class="pnl-sub">לחיצה על טלפון = חיוג ישיר. לחיצה על מייל = פתיחת מייל.</p>
@@ -252,8 +263,8 @@ main{padding:20px;max-width:1400px;margin:0 auto}
     <div id="vendorList"></div>
   </div>
 
-  
   <!-- RECOMMENDATIONS -->
+
   <div class="pnl" id="p-recs">
     <h2>המלצות — חנויות וספקים מומלצים</h2>
     <p class="pnl-sub">חנויות וספקים שכדאי לבדוק. לחצי על הלינק לפתיחה.</p>
@@ -262,6 +273,7 @@ main{padding:20px;max-width:1400px;margin:0 auto}
   </div>
 
   <!-- DECISIONS -->
+
   <div class="pnl" id="p-decisions">
     <h2>לוג החלטות</h2>
     <p class="pnl-sub">תיעוד החלטות עיצוביות וטכניות לאורך הפרויקט</p>
@@ -270,6 +282,7 @@ main{padding:20px;max-width:1400px;margin:0 auto}
   </div>
 
   <!-- ISSUES -->
+
   <div class="pnl" id="p-issues">
     <h2>חריגות ושינויים (Change Orders)</h2>
     <p class="pnl-sub">תוספות ושינויים תוך כדי שיפוץ — עם השפעה על התקציב</p>
@@ -278,6 +291,7 @@ main{padding:20px;max-width:1400px;margin:0 auto}
   </div>
 
   <!-- RISKS -->
+
   <div class="pnl" id="p-risks">
     <h2>סיכונים וחסמים</h2>
     <p class="pnl-sub">בעיות פתוחות שעלולות לעכב את הפרויקט</p>
@@ -286,6 +300,7 @@ main{padding:20px;max-width:1400px;margin:0 auto}
   </div>
 
   <!-- PLANS / PHOTOS -->
+
   <div class="pnl" id="p-plans">
     <h2>תוכניות, הדמיות ויומן תמונות שטח</h2>
     <p class="pnl-sub">תשריט אדריכלי, תוכניות סמל, הדמיות + העלאת תמונות שטח שבועיות</p>
@@ -307,6 +322,7 @@ main{padding:20px;max-width:1400px;margin:0 auto}
 <button id="fab" style="display:none" onclick="openQuickTask()" title="משימה חדשה (Ctrl+N)">+</button>
 
 <!-- ============ MODAL ============ -->
+
 <div class="modal" id="modal">
   <div class="modal-box">
     <h3 id="modalTitle"></h3>
@@ -760,134 +776,122 @@ function renderRecs(){
 }
 function openRecForm(){
   openModal('המלצה חדשה',`<div class="form-row"><input id="f_store" placeholder="שם חנות"><input id="f_type" placeholder="סוג רכישה (פרקט/אריחים/...)"><input id="f_link" placeholder="לינק (https://...)"><input id="f_by" placeholder="מי המליץ"><textarea id="f_notes" placeholder="הערות" rows="2"></textarea></div>`,
-    async()=>{await save('recommendations',{store_name:$('f_store').value,purchase_type:$('f_type').value,link:$('f_link').value,added_by:$('f_by').value,notes:$('f_notes').value})});
+
+```
+async()=>{await save('recommendations',{store_name:$('f_store').value,purchase_type:$('f_type').value,link:$('f_link').value,added_by:$('f_by').value,notes:$('f_notes').value})});
+```
+
 }
 
 // Quick add task FAB
 function openQuickTask(){
-  openModal('משימה מהירה',`<div class="form-row"><input id="qt_title" placeholder="כותרת המשימה" autofocus><select id="qt_p"><option value="urgent">דחוף</option><option value="high" selected>גבוה</option><option value="med">רגיל</option></select><input id="qt_owner" placeholder="אחראי (שלומית/ארז/שניהם)" value="shlomit"><input id="qt_due" type="date"><input id="qt_chap" placeholder="פרק (אופציונלי)"></div>`,
-    async()=>{const t=$('qt_title').value.trim();if(!t)return;await save('tasks',{title:t,priority:$('qt_p').value,owner:$('qt_owner').value,due_date:$('qt_due').value||null,chapter:$('qt_chap').value,status:'open'})});
-  setTimeout(()=>$('qt_title').focus(),100);
+openModal(‘משימה מהירה’,`<div class="form-row"><input id="qt_title" placeholder="כותרת המשימה" autofocus><select id="qt_p"><option value="urgent">דחוף</option><option value="high" selected>גבוה</option><option value="med">רגיל</option></select><input id="qt_owner" placeholder="אחראי (שלומית/ארז/שניהם)" value="shlomit"><input id="qt_due" type="date"><input id="qt_chap" placeholder="פרק (אופציונלי)"></div>`,
+async()=>{const t=$(‘qt_title’).value.trim();if(!t)return;await save(‘tasks’,{title:t,priority:$(‘qt_p’).value,owner:$(‘qt_owner’).value,due_date:$(‘qt_due’).value||null,chapter:$(‘qt_chap’).value,status:‘open’})});
+setTimeout(()=>$(‘qt_title’).focus(),100);
 }
 
 // ============ FORMS / MODAL ============
 let modalSaveFn=null;
 function openModal(title,body,saveFn){
-  $('modalTitle').textContent=title;
-  $('modalBody').innerHTML=body;
-  modalSaveFn=saveFn;
-  $('modal').classList.add('on');
+$(‘modalTitle’).textContent=title;
+$(‘modalBody’).innerHTML=body;
+modalSaveFn=saveFn;
+$(‘modal’).classList.add(‘on’);
 }
-function closeModal(){$('modal').classList.remove('on');modalSaveFn=null}
-$('modalSave').onclick=async()=>{if(modalSaveFn)await modalSaveFn();closeModal()};
+function closeModal(){$(‘modal’).classList.remove(‘on’);modalSaveFn=null}
+$(‘modalSave’).onclick=async()=>{if(modalSaveFn)await modalSaveFn();closeModal()};
 
-const vendorOpts=()=>state.vendors.map(v=>`<option value="${v.id}">${esc(v.name)}</option>`).join('');
+const vendorOpts=()=>state.vendors.map(v=>`<option value="${v.id}">${esc(v.name)}</option>`).join(’’);
 
 function openTaskForm(id){
-  const t=id?state.tasks.find(x=>x.id===id):{};
-  openModal(id?'עריכת משימה':'משימה חדשה',`
-    <div class="form-row">
-      <input id="f_title" placeholder="כותרת המשימה" value="${esc(t.title||'')}">
-      <select id="f_priority"><option value="urgent" ${t.priority==='urgent'?'selected':''}>דחוף</option><option value="high" ${t.priority==='high'?'selected':''}>גבוה</option><option value="med" ${t.priority==='med'?'selected':''}>רגיל</option></select>
-      <input id="f_owner" placeholder="אחראי (שלומית/ארז/שניהם)" value="${esc(t.owner||'')}">
-      <input id="f_due" type="date" value="${t.due_date||''}">
-      <input id="f_chapter" placeholder="פרק/קטגוריה" value="${esc(t.chapter||'')}">
-      <select id="f_vendor"><option value="">— ספק קשור (אופציונלי) —</option>${vendorOpts()}</select>
-    </div>`,async()=>{
-    const r={title:$('f_title').value,priority:$('f_priority').value,owner:$('f_owner').value,due_date:$('f_due').value||null,chapter:$('f_chapter').value,vendor_id:$('f_vendor').value||null};
-    if(id)r.id=id;
-    if(state.vendors.find(v=>v.id==r.vendor_id))r.vendor_id=+r.vendor_id;
-    await save('tasks',r);
-  });
-  if(t.vendor_id)$('f_vendor').value=t.vendor_id;
+const t=id?state.tasks.find(x=>x.id===id):{};
+openModal(id?‘עריכת משימה’:‘משימה חדשה’,` <div class="form-row"> <input id="f_title" placeholder="כותרת המשימה" value="${esc(t.title||'')}"> <select id="f_priority"><option value="urgent" ${t.priority==='urgent'?'selected':''}>דחוף</option><option value="high" ${t.priority==='high'?'selected':''}>גבוה</option><option value="med" ${t.priority==='med'?'selected':''}>רגיל</option></select> <input id="f_owner" placeholder="אחראי (שלומית/ארז/שניהם)" value="${esc(t.owner||'')}"> <input id="f_due" type="date" value="${t.due_date||''}"> <input id="f_chapter" placeholder="פרק/קטגוריה" value="${esc(t.chapter||'')}"> <select id="f_vendor"><option value="">— ספק קשור (אופציונלי) —</option>${vendorOpts()}</select> </div>`,async()=>{
+const r={title:$(‘f_title’).value,priority:$(‘f_priority’).value,owner:$(‘f_owner’).value,due_date:$(‘f_due’).value||null,chapter:$(‘f_chapter’).value,vendor_id:$(‘f_vendor’).value||null};
+if(id)r.id=id;
+if(state.vendors.find(v=>v.id==r.vendor_id))r.vendor_id=+r.vendor_id;
+await save(‘tasks’,r);
+});
+if(t.vendor_id)$(‘f_vendor’).value=t.vendor_id;
 }
 
 function openExpenseForm(id){
-  const e=id?state.expenses.find(x=>x.id===id):{status:'paid'};
-  openModal(id?'עריכת הוצאה':'הוצאה חדשה',`
-    <div class="form-row">
-      <input id="f_item" placeholder="פריט/תיאור" value="${esc(e.item||'')}">
-      <input id="f_amount" type="number" placeholder="סכום ₪" value="${e.amount||''}">
-      <select id="f_status"><option value="paid" ${e.status==='paid'?'selected':''}>שולם</option><option value="committed" ${e.status==='committed'?'selected':''}>התחייבות פתוחה</option><option value="quoted" ${e.status==='quoted'?'selected':''}>הצעה בלבד</option><option value="change_order" ${e.status==='change_order'?'selected':''}>חריגה</option></select>
-      <select id="f_vendor"><option value="">— ספק —</option>${vendorOpts()}</select>
-      <input id="f_category" placeholder="קטגוריה" value="${esc(e.category||'')}">
-      <input id="f_milestone" placeholder="אבן דרך" value="${esc(e.milestone||'')}">
-      <input id="f_paid_date" type="date" value="${e.paid_date||''}">
-    </div>`,async()=>{
-    const r={item:$('f_item').value,amount:+$('f_amount').value||0,status:$('f_status').value,vendor_id:+$('f_vendor').value||null,category:$('f_category').value,milestone:$('f_milestone').value,paid_date:$('f_paid_date').value||null};
-    if(id)r.id=id;await save('expenses',r);
-  });
-  if(e.vendor_id)$('f_vendor').value=e.vendor_id;
+const e=id?state.expenses.find(x=>x.id===id):{status:‘paid’};
+openModal(id?‘עריכת הוצאה’:‘הוצאה חדשה’,` <div class="form-row"> <input id="f_item" placeholder="פריט/תיאור" value="${esc(e.item||'')}"> <input id="f_amount" type="number" placeholder="סכום ₪" value="${e.amount||''}"> <select id="f_status"><option value="paid" ${e.status==='paid'?'selected':''}>שולם</option><option value="committed" ${e.status==='committed'?'selected':''}>התחייבות פתוחה</option><option value="quoted" ${e.status==='quoted'?'selected':''}>הצעה בלבד</option><option value="change_order" ${e.status==='change_order'?'selected':''}>חריגה</option></select> <select id="f_vendor"><option value="">— ספק —</option>${vendorOpts()}</select> <input id="f_category" placeholder="קטגוריה" value="${esc(e.category||'')}"> <input id="f_milestone" placeholder="אבן דרך" value="${esc(e.milestone||'')}"> <input id="f_paid_date" type="date" value="${e.paid_date||''}"> </div>`,async()=>{
+const r={item:$(‘f_item’).value,amount:+$(‘f_amount’).value||0,status:$(‘f_status’).value,vendor_id:+$(‘f_vendor’).value||null,category:$(‘f_category’).value,milestone:$(‘f_milestone’).value,paid_date:$(‘f_paid_date’).value||null};
+if(id)r.id=id;await save(‘expenses’,r);
+});
+if(e.vendor_id)$(‘f_vendor’).value=e.vendor_id;
 }
 
 function openVendorForm(id){
-  const v=id?state.vendors.find(x=>x.id===id):{};
-  openModal(id?'עריכת ספק':'ספק חדש',`<div class="form-row"><input id="f_name" placeholder="שם" value="${esc(v.name||'')}"><input id="f_role" placeholder="תפקיד" value="${esc(v.role||'')}"><input id="f_category" placeholder="קטגוריה (VRF/פרקט/...)" value="${esc(v.category||'')}"><input id="f_phone" placeholder="טלפון" value="${esc(v.phone||'')}"><input id="f_email" placeholder="מייל" value="${esc(v.email||'')}"><textarea id="f_notes" placeholder="הערות" rows="2">${esc(v.notes||'')}</textarea></div>`,
-    async()=>{const r={name:$('f_name').value,role:$('f_role').value,category:$('f_category').value,phone:$('f_phone').value,email:$('f_email').value,notes:$('f_notes').value};if(id)r.id=id;await save('vendors',r)});
+const v=id?state.vendors.find(x=>x.id===id):{};
+openModal(id?‘עריכת ספק’:‘ספק חדש’,`<div class="form-row"><input id="f_name" placeholder="שם" value="${esc(v.name||'')}"><input id="f_role" placeholder="תפקיד" value="${esc(v.role||'')}"><input id="f_category" placeholder="קטגוריה (VRF/פרקט/...)" value="${esc(v.category||'')}"><input id="f_phone" placeholder="טלפון" value="${esc(v.phone||'')}"><input id="f_email" placeholder="מייל" value="${esc(v.email||'')}"><textarea id="f_notes" placeholder="הערות" rows="2">${esc(v.notes||'')}</textarea></div>`,
+async()=>{const r={name:$(‘f_name’).value,role:$(‘f_role’).value,category:$(‘f_category’).value,phone:$(‘f_phone’).value,email:$(‘f_email’).value,notes:$(‘f_notes’).value};if(id)r.id=id;await save(‘vendors’,r)});
 }
 
 function openPurchaseForm(id){
-  const p=id?state.purchases.find(x=>x.id===id):{};
-  openModal(id?'עריכת רכש':'רכש חדש',`<div class="form-row"><input id="f_item" placeholder="פריט" value="${esc(p.item||'')}"><input id="f_model" placeholder="דגם" value="${esc(p.model||'')}"><input id="f_price" type="number" placeholder="מחיר ₪" value="${p.price||''}"><select id="f_vendor"><option value="">— ספק —</option>${vendorOpts()}</select><input id="f_category" placeholder="קטגוריה" value="${esc(p.category||'')}"><label style="font-size:.8rem"><input type="checkbox" id="f_ordered" ${p.ordered?'checked':''}> הוזמן</label><label style="font-size:.8rem"><input type="checkbox" id="f_delivered" ${p.delivered?'checked':''}> סופק</label></div>`,
-    async()=>{const r={item:$('f_item').value,model:$('f_model').value,price:+$('f_price').value||null,vendor_id:+$('f_vendor').value||null,category:$('f_category').value,ordered:$('f_ordered').checked,delivered:$('f_delivered').checked};if(id)r.id=id;
-    const wasDelivered=id?state.purchases.find(p=>p.id===id)?.delivered:false;
-    await save('purchases',r);
-    // If newly delivered and has price → create paid expense automatically
-    if(r.delivered&&!wasDelivered&&r.price){
-      if(confirm(`הפריט "${r.item}" סומן כסופק. להוסיף ל-${r.price} ₪ להוצאות כ״שולם״?`)){
-        await save('expenses',{vendor_id:r.vendor_id,item:r.item+(r.model?' — '+r.model:''),amount:r.price,status:'paid',category:r.category||'רכש',milestone:'סופק מרכש',paid_date:new Date().toISOString().slice(0,10)});
-      }
-    }
-  });
-  if(p.vendor_id)$('f_vendor').value=p.vendor_id;
+const p=id?state.purchases.find(x=>x.id===id):{};
+openModal(id?‘עריכת רכש’:‘רכש חדש’,`<div class="form-row"><input id="f_item" placeholder="פריט" value="${esc(p.item||'')}"><input id="f_model" placeholder="דגם" value="${esc(p.model||'')}"><input id="f_price" type="number" placeholder="מחיר ₪" value="${p.price||''}"><select id="f_vendor"><option value="">— ספק —</option>${vendorOpts()}</select><input id="f_category" placeholder="קטגוריה" value="${esc(p.category||'')}"><label style="font-size:.8rem"><input type="checkbox" id="f_ordered" ${p.ordered?'checked':''}> הוזמן</label><label style="font-size:.8rem"><input type="checkbox" id="f_delivered" ${p.delivered?'checked':''}> סופק</label></div>`,
+async()=>{const r={item:$(‘f_item’).value,model:$(‘f_model’).value,price:+$(‘f_price’).value||null,vendor_id:+$(‘f_vendor’).value||null,category:$(‘f_category’).value,ordered:$(‘f_ordered’).checked,delivered:$(‘f_delivered’).checked};if(id)r.id=id;
+const wasDelivered=id?state.purchases.find(p=>p.id===id)?.delivered:false;
+await save(‘purchases’,r);
+// If newly delivered and has price → create paid expense automatically
+if(r.delivered&&!wasDelivered&&r.price){
+if(confirm(`הפריט "${r.item}" סומן כסופק. להוסיף ל-${r.price} ₪ להוצאות כ״שולם״?`)){
+await save(‘expenses’,{vendor_id:r.vendor_id,item:r.item+(r.model?’ — ‘+r.model:’’),amount:r.price,status:‘paid’,category:r.category||‘רכש’,milestone:‘סופק מרכש’,paid_date:new Date().toISOString().slice(0,10)});
+}
+}
+});
+if(p.vendor_id)$(‘f_vendor’).value=p.vendor_id;
 }
 
 function openQuoteForm(){
-  openModal('הצעת מחיר חדשה',`<div class="form-row"><input id="f_category" placeholder="קטגוריה (VRF/פרקט/נגרות/...)"><select id="f_vendor"><option value="">— ספק —</option>${vendorOpts()}</select><input id="f_amount" type="number" placeholder="סכום ₪"><input id="f_valid" type="date" placeholder="תוקף"><textarea id="f_notes" placeholder="הערות" rows="2"></textarea></div>`,
-    async()=>{await save('quotes',{category:$('f_category').value,vendor_id:+$('f_vendor').value||null,amount:+$('f_amount').value||0,valid_until:$('f_valid').value||null,notes:$('f_notes').value})});
+openModal(‘הצעת מחיר חדשה’,`<div class="form-row"><input id="f_category" placeholder="קטגוריה (VRF/פרקט/נגרות/...)"><select id="f_vendor"><option value="">— ספק —</option>${vendorOpts()}</select><input id="f_amount" type="number" placeholder="סכום ₪"><input id="f_valid" type="date" placeholder="תוקף"><textarea id="f_notes" placeholder="הערות" rows="2"></textarea></div>`,
+async()=>{await save(‘quotes’,{category:$(‘f_category’).value,vendor_id:+$(‘f_vendor’).value||null,amount:+$(‘f_amount’).value||0,valid_until:$(‘f_valid’).value||null,notes:$(‘f_notes’).value})});
 }
 
 function openDecisionForm(){
-  openModal('החלטה חדשה',`<div class="form-row"><input id="f_title" placeholder="ההחלטה"><textarea id="f_details" placeholder="פרטים" rows="2"></textarea><input id="f_by" placeholder="מי החליט"><input id="f_chapter" placeholder="פרק קשור"><input id="f_date" type="date" value="${new Date().toISOString().slice(0,10)}"></div>`,
-    async()=>{await save('decisions',{title:$('f_title').value,details:$('f_details').value,decided_by:$('f_by').value,chapter:$('f_chapter').value,decision_date:$('f_date').value})});
+openModal(‘החלטה חדשה’,`<div class="form-row"><input id="f_title" placeholder="ההחלטה"><textarea id="f_details" placeholder="פרטים" rows="2"></textarea><input id="f_by" placeholder="מי החליט"><input id="f_chapter" placeholder="פרק קשור"><input id="f_date" type="date" value="${new Date().toISOString().slice(0,10)}"></div>`,
+async()=>{await save(‘decisions’,{title:$(‘f_title’).value,details:$(‘f_details’).value,decided_by:$(‘f_by’).value,chapter:$(‘f_chapter’).value,decision_date:$(‘f_date’).value})});
 }
 
 function openIssueForm(){
-  openModal('חריגה חדשה',`<div class="form-row"><textarea id="f_desc" placeholder="תיאור" rows="2"></textarea><input id="f_cost" type="number" placeholder="עלות נוספת ₪ (או שלילי להפחתה)"><select id="f_status"><option value="open">פתוח</option><option value="approved">אושר</option></select></div>`,
-    async()=>{await save('issues',{description:$('f_desc').value,cost_delta:+$('f_cost').value||0,status:$('f_status').value,issue_date:new Date().toISOString().slice(0,10)})});
+openModal(‘חריגה חדשה’,`<div class="form-row"><textarea id="f_desc" placeholder="תיאור" rows="2"></textarea><input id="f_cost" type="number" placeholder="עלות נוספת ₪ (או שלילי להפחתה)"><select id="f_status"><option value="open">פתוח</option><option value="approved">אושר</option></select></div>`,
+async()=>{await save(‘issues’,{description:$(‘f_desc’).value,cost_delta:+$(‘f_cost’).value||0,status:$(‘f_status’).value,issue_date:new Date().toISOString().slice(0,10)})});
 }
 
 function openRiskForm(){
-  openModal('סיכון חדש',`<div class="form-row"><input id="f_title" placeholder="כותרת"><select id="f_sev"><option value="high">גבוה</option><option value="med" selected>בינוני</option><option value="low">נמוך</option></select><input id="f_owner" placeholder="אחראי"><input id="f_due" type="date"><textarea id="f_notes" placeholder="הערות" rows="2"></textarea></div>`,
-    async()=>{await save('risks',{title:$('f_title').value,severity:$('f_sev').value,owner:$('f_owner').value,due_date:$('f_due').value||null,notes:$('f_notes').value,status:'open'})});
+openModal(‘סיכון חדש’,`<div class="form-row"><input id="f_title" placeholder="כותרת"><select id="f_sev"><option value="high">גבוה</option><option value="med" selected>בינוני</option><option value="low">נמוך</option></select><input id="f_owner" placeholder="אחראי"><input id="f_due" type="date"><textarea id="f_notes" placeholder="הערות" rows="2"></textarea></div>`,
+async()=>{await save(‘risks’,{title:$(‘f_title’).value,severity:$(‘f_sev’).value,owner:$(‘f_owner’).value,due_date:$(‘f_due’).value||null,notes:$(‘f_notes’).value,status:‘open’})});
 }
 
 // ============ GLOBAL SEARCH ============
 function globalSearchHandler(){
-  const q=$('globalSearch').value.trim().toLowerCase();
-  const sr=$('searchResults');
-  if(!q){sr.style.display='none';document.querySelectorAll('.pnl').forEach((p,i)=>p.style.display='');document.querySelector('.pnl.on').style.display='block';return}
-  document.querySelectorAll('.pnl').forEach(p=>p.style.display='none');
-  sr.style.display='block';
-  const hit=(s)=>(s||'').toString().toLowerCase().includes(q);
-  const sections=[
-    ['משימות',state.tasks.filter(t=>hit(t.title)||hit(t.owner)||hit(t.chapter))],
-    ['ספקים',state.vendors.filter(v=>hit(v.name)||hit(v.role)||hit(v.category))],
-    ['הוצאות',state.expenses.filter(e=>hit(e.item)||hit(e.category))],
-    ['רכש',state.purchases.filter(p=>hit(p.item)||hit(p.model))],
-    ['החלטות',state.decisions.filter(d=>hit(d.title)||hit(d.details))],
-    ['חריגות',state.issues.filter(i=>hit(i.description))],
-    ['סיכונים',state.risks.filter(r=>hit(r.title)||hit(r.notes))],
-  ];
-  sr.innerHTML='<h2>תוצאות חיפוש</h2>'+sections.filter(([n,l])=>l.length).map(([n,l])=>`<h3 style="margin:16px 0 8px;font-size:.9rem">${n} (${l.length})</h3>`+l.map(item=>`<div class="card"><div class="card-main"><div class="card-title">${esc(item.title||item.name||item.item||item.description||'')}</div></div></div>`).join('')).join('')||'<div class="empty">אין תוצאות</div>';
+const q=$(‘globalSearch’).value.trim().toLowerCase();
+const sr=$(‘searchResults’);
+if(!q){sr.style.display=‘none’;document.querySelectorAll(’.pnl’).forEach((p,i)=>p.style.display=’’);document.querySelector(’.pnl.on’).style.display=‘block’;return}
+document.querySelectorAll(’.pnl’).forEach(p=>p.style.display=‘none’);
+sr.style.display=‘block’;
+const hit=(s)=>(s||’’).toString().toLowerCase().includes(q);
+const sections=[
+[‘משימות’,state.tasks.filter(t=>hit(t.title)||hit(t.owner)||hit(t.chapter))],
+[‘ספקים’,state.vendors.filter(v=>hit(v.name)||hit(v.role)||hit(v.category))],
+[‘הוצאות’,state.expenses.filter(e=>hit(e.item)||hit(e.category))],
+[‘רכש’,state.purchases.filter(p=>hit(p.item)||hit(p.model))],
+[‘החלטות’,state.decisions.filter(d=>hit(d.title)||hit(d.details))],
+[‘חריגות’,state.issues.filter(i=>hit(i.description))],
+[‘סיכונים’,state.risks.filter(r=>hit(r.title)||hit(r.notes))],
+];
+sr.innerHTML=’<h2>תוצאות חיפוש</h2>’+sections.filter(([n,l])=>l.length).map(([n,l])=>`<h3 style="margin:16px 0 8px;font-size:.9rem">${n} (${l.length})</h3>`+l.map(item=>`<div class="card"><div class="card-main"><div class="card-title">${esc(item.title||item.name||item.item||item.description||'')}</div></div></div>`).join(’’)).join(’’)||’<div class="empty">אין תוצאות</div>’;
 }
 
 // ============ INIT ============
 sb.auth.onAuthStateChange((event,session)=>{
-  if(event==='SIGNED_IN'&&!state.user){state.user=session.user;showApp();loadAll().then(renderAll)}
+if(event===‘SIGNED_IN’&&!state.user){state.user=session.user;showApp();loadAll().then(renderAll)}
 });
-document.addEventListener('keydown',e=>{if((e.ctrlKey||e.metaKey)&&e.key==='n'&&state.user){e.preventDefault();openQuickTask()}});
+document.addEventListener(‘keydown’,e=>{if((e.ctrlKey||e.metaKey)&&e.key===‘n’&&state.user){e.preventDefault();openQuickTask()}});
 checkAuth();
 </script>
+
 </body>
 </html>
