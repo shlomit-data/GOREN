@@ -7,6 +7,14 @@
 <title>שיפוץ נחמני 13 — לוח בקרה</title>
 <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;600;700&family=Rubik:wght@400;500;700&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+if(typeof supabase==='undefined'){
+  // Fallback CDN
+  var s=document.createElement('script');
+  s.src='https://unpkg.com/@supabase/supabase-js@2';
+  document.head.appendChild(s);
+}
+</script>
 <style>
 :root{
   --bg:#0b0f17;--s1:#111827;--s2:#1a2333;--s3:#243044;--bd:#2a3548;
@@ -373,7 +381,23 @@ const SUPABASE_URL='https://qugryaepyffgqiaycauk.supabase.co';
 const SUPABASE_KEY='sb_publishable_C7bVr2-3RwkdmCVabGYVTQ_P6LQ7GFY';
 const BUCKET_NAME='shlomit & erez 2026';
 const STORAGE_BASE=SUPABASE_URL+'/storage/v1/object/public/'+encodeURIComponent(BUCKET_NAME)+'/';
-const sb=supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+let sb;
+function initSupabase(){
+  if(typeof supabase!=='undefined'){
+    sb=supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+    return true;
+  }
+  return false;
+}
+if(!initSupabase()){
+  // Wait for fallback CDN
+  window.addEventListener('load',()=>{
+    if(!initSupabase()){
+      document.getElementById('authMsg').style.color='var(--red)';
+      document.getElementById('authMsg').textContent='שגיאה בטעינת הספרייה. נסי לרענן את הדף.';
+    }
+  });
+}
 
 // ============ STATE ============
 const state={user:null,tasks:[],expenses:[],vendors:[],purchases:[],quotes:[],decisions:[],issues:[],risks:[],photos:[],recommendations:[]};
@@ -408,6 +432,13 @@ const esc=s=>(s||'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','
 
 // ============ AUTH ============
 async function login(){
+  if(!sb){
+    if(!initSupabase()){
+      $('authMsg').style.color='var(--red)';
+      $('authMsg').textContent='הספרייה עדיין נטענת... נסי שוב בעוד שנייה';
+      return;
+    }
+  }
   const email=$('authEmail').value.trim();
   const password=$('authPass').value;
   if(!email||!password){$('authMsg').style.color='var(--red)';$('authMsg').textContent='יש למלא מייל וסיסמה';return}
@@ -421,6 +452,7 @@ async function login(){
 async function logout(){await sb.auth.signOut();location.reload()}
 
 async function checkAuth(){
+  if(!sb){$('authScreen').style.display='flex';return}
   try{
     const{data:{session}}=await sb.auth.getSession();
     if(session&&session.user){state.user=session.user;showApp();await loadAll();renderAll();setupRealtime()}
