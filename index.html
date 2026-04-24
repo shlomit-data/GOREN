@@ -166,6 +166,7 @@ main{padding:14px}
     </div>
     <div class="hdr-actions">
       <input class="search-box" id="globalSearch" placeholder="🔍 חיפוש כללי..." oninput="globalSearchHandler()">
+      <span id="syncFlash" style="width:8px;height:8px;border-radius:50%;background:var(--grn);opacity:0;transition:opacity .3s" title="סנכרון"></span>
       <span class="user-chip" id="userChip"></span>
       <button class="btn-icon" onclick="logout()" title="התנתקות">⎋</button>
     </div>
@@ -185,7 +186,9 @@ main{padding:14px}
   <button data-p="decisions">📝 החלטות</button>
   <button data-p="issues">⚠️ חריגות <span class="badge" id="navIssues">0</span></button>
   <button data-p="risks">🚨 סיכונים</button>
+  <button data-p="gantt">📊 Gantt</button>
   <button data-p="plans">📐 תוכניות</button>
+  <button data-p="aichat">🤖 AI עוזר</button>
 </nav>
 
 <!-- ============ MAIN ============ -->
@@ -299,6 +302,14 @@ main{padding:14px}
     <div id="riskList"></div>
   </div>
 
+  <!-- GANTT -->
+
+  <div class="pnl" id="p-gantt">
+    <h2>לוח זמנים — Gantt</h2>
+    <p class="pnl-sub">65 ימי עסקים (א׳-ה׳) · 12.04–~22.06.2026 · מולי סגל · רצף עבודה מעודכן</p>
+    <div id="ganttChart"></div>
+  </div>
+
   <!-- PLANS / PHOTOS -->
 
   <div class="pnl" id="p-plans">
@@ -316,6 +327,19 @@ main{padding:14px}
     <div id="plansGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px;margin-bottom:24px"></div>
     <h3 style="font-size:.9rem;margin:24px 0 10px">📸 יומן תמונות שטח</h3>
     <div id="photosGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px"></div>
+  </div>
+
+  <!-- AI CHAT -->
+
+  <div class="pnl" id="p-aichat">
+    <h2>🤖 AI עוזר — הזנת נתונים בשפה חופשית</h2>
+    <p class="pnl-sub">כתבי מה שקרה (פגישה, הצעת מחיר, החלטה, הוצאה) והעוזר יכניס למערכת</p>
+    <div id="chatMessages" style="background:var(--s2);border:1px solid var(--bd);border-radius:10px;padding:16px;min-height:300px;max-height:500px;overflow-y:auto;margin-bottom:12px"></div>
+    <div style="display:flex;gap:8px">
+      <textarea id="chatInput" rows="3" placeholder="לדוגמה: קיבלנו הצעת מחיר מספק פרקט בשם 'אומנות הפרקט' — 35,000 ₪ לכל הדירה, כולל התקנה. תוקף עד סוף מאי." style="flex:1;font-family:Heebo;padding:10px;background:var(--s1);border:1px solid var(--bd);border-radius:8px;color:var(--t1);font-size:.85rem;resize:none" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendAIChat()}"></textarea>
+      <button class="btn" onclick="sendAIChat()" style="align-self:flex-end;padding:12px 20px">שלח →</button>
+    </div>
+    <div style="font-size:.7rem;color:var(--t3);margin-top:8px">Enter לשליחה · Shift+Enter לשורה חדשה · העוזר מכיר את כל הנתונים שלך</div>
   </div>
 </main>
 
@@ -350,7 +374,7 @@ const TABLES=['vendors','tasks','expenses','purchases','quotes','decisions','iss
 const PROJECT={
   budget:1000000,
   contractor:{name:'מולי סגל',total:495322,paid:0,startDate:'2026-04-12',duration:65},
-  endDateEstimate:'2026-06-16'
+  endDateEstimate:'2026-06-22'
 };
 
 // ============ UTILS ============
@@ -389,7 +413,7 @@ async function logout(){await sb.auth.signOut();location.reload()}
 
 async function checkAuth(){
   const{data:{session}}=await sb.auth.getSession();
-  if(session){state.user=session.user;showApp();await loadAll();renderAll()}
+  if(session){state.user=session.user;showApp();await loadAll();renderAll();setupRealtime()}
   else{$('authScreen').style.display='flex'}
 }
 
@@ -411,6 +435,7 @@ async function loadAll(){
 async function reload(table){
   const{data}=await sb.from(table).select('*').order('id');
   state[table]=data||[];renderAll();
+  const sf=$('syncFlash');if(sf){sf.style.opacity='1';setTimeout(()=>sf.style.opacity='0',600)}
 }
 async function save(table,record){
   if(record.id){const{error}=await sb.from(table).update(record).eq('id',record.id);if(error)alert(error.message)}
@@ -446,7 +471,7 @@ function renderKPIs(){
 
   $('kpiGrid').innerHTML=`
     <div class="kpi blu"><div class="kpi-lbl">ימי עסקים לתחילה</div><div class="kpi-val">${startDays>0?businessDaysBetween(new Date(),PROJECT.contractor.startDate):'בעיצומו'}</div><div class="kpi-sub">12.04.2026</div></div>
-    <div class="kpi pnk"><div class="kpi-lbl">ימי עסקים לסיום</div><div class="kpi-val">${businessDaysBetween(new Date(),PROJECT.endDateEstimate)||'—'}</div><div class="kpi-sub">~16.06.2026 · א-ה בלבד</div></div>
+    <div class="kpi pnk"><div class="kpi-lbl">ימי עסקים לסיום</div><div class="kpi-val">${businessDaysBetween(new Date(),PROJECT.endDateEstimate)||'—'}</div><div class="kpi-sub">~22.06.2026 · א-ה בלבד</div></div>
     <div class="kpi grn"><div class="kpi-lbl">משימות</div><div class="kpi-val">${tDone}/${tTot}</div><div class="kpi-sub">${tTot?Math.round(tDone/tTot*100):0}% הושלם${tLate?' · '+tLate+' באיחור':''}</div></div>
     <div class="kpi"><div class="kpi-lbl">שולם בפועל</div><div class="kpi-val num">${fmtK(expPaid)}</div><div class="kpi-sub">מתוך ${fmtK(PROJECT.budget)}</div></div>
     <div class="kpi ylw"><div class="kpi-lbl">התחייבות פתוחה</div><div class="kpi-val num">${fmtK(expCommit)}</div><div class="kpi-sub">חוזים חתומים</div></div>
@@ -767,7 +792,7 @@ function renderPhotosLog(){
 // ============ RENDER ALL ============
 function renderAll(){
   renderKPIs();renderTasks();renderBudget();renderVendors();renderPurchases();
-  renderQuotes();renderRecs();renderDecisions();renderIssues();renderRisks();renderPlans();renderPhotosLog();
+  renderQuotes();renderRecs();renderDecisions();renderIssues();renderRisks();renderPlans();renderPhotosLog();renderGantt();
 }
 
 
@@ -890,6 +915,145 @@ sb.auth.onAuthStateChange((event,session)=>{
 if(event===‘SIGNED_IN’&&!state.user){state.user=session.user;showApp();loadAll().then(renderAll)}
 });
 document.addEventListener(‘keydown’,e=>{if((e.ctrlKey||e.metaKey)&&e.key===‘n’&&state.user){e.preventDefault();openQuickTask()}});
+
+// ============ REALTIME SYNC ============
+function setupRealtime(){
+TABLES.forEach(table=>{
+sb.channel(‘rt-’+table).on(‘postgres_changes’,{event:’*’,schema:‘public’,table},async()=>{
+await reload(table);
+}).subscribe();
+});
+}
+
+// ============ GANTT ============
+const GANTT_PHASES=[
+{name:‘הריסה ופינוי’,start:0,duration:7,color:’#f87171’,amount:51000,milestone:’’},
+{name:‘בניית קירות + משקופים’,start:5,duration:15,color:’#fbbf24’,amount:131275,milestone:‘תשלום 30% אחרי קירות’},
+{name:‘איטום חדרי רחצה’,start:18,duration:4,color:’#60a5fa’,amount:6000,milestone:’’},
+{name:‘תשתיות חשמל ומים’,start:20,duration:18,color:’#a78bfa’,amount:122890,milestone:‘תשלום 20% אחרי תשתיות’},
+{name:‘תקרות גבס’,start:35,duration:7,color:’#f472b6’,amount:0,milestone:’’},
+{name:‘ריצוף וחיפוי חדרי רחצה’,start:40,duration:12,color:’#34d399’,amount:32050,milestone:‘תשלום 15% אחרי ריצוף’},
+{name:‘שפכטלים וצבע’,start:50,duration:10,color:’#fbbf24’,amount:32300,milestone:’’},
+{name:‘גמרים + מסירה’,start:58,duration:7,color:’#7c5cff’,amount:0,milestone:‘תשלום 10% סיום’},
+];
+function renderGantt(){
+const el=$(‘ganttChart’);if(!el)return;
+const total=PROJECT.contractor.duration;
+const start=new Date(PROJECT.contractor.startDate);
+const elapsed=Math.max(0,businessDaysBetween(start,new Date()));
+let h=’<div style="background:var(--s1);border:1px solid var(--bd);border-radius:10px;padding:16px;overflow-x:auto"><div style="min-width:700px">’;
+h+=’<div style="display:flex;justify-content:space-between;font-size:.7rem;color:var(--t3);margin-bottom:10px"><span>’+fmtDate(PROJECT.contractor.startDate)+’</span><span>’+total+’ ימי עבודה</span><span>’+fmtDate(PROJECT.endDateEstimate)+’</span></div>’;
+GANTT_PHASES.forEach(p=>{
+const left=(p.start/total)*100,w=(p.duration/total)*100;
+const isPast=p.start+p.duration<=elapsed,isCur=p.start<=elapsed&&p.start+p.duration>elapsed;
+h+=’<div style="display:flex;align-items:center;margin-bottom:6px;gap:10px"><div style="width:180px;font-size:.76rem;flex-shrink:0">’+p.name+(p.amount?’<div style="font-size:.62rem;color:var(--t3);font-family:Rubik">’+fmt(p.amount)+’ ₪</div>’:’’)+’</div><div style="flex:1;background:var(--s2);height:22px;border-radius:5px;position:relative;border:1px solid var(--bd)"><div style="position:absolute;right:'+left+'%;width:'+w+'%;top:0;bottom:0;background:'+p.color+';border-radius:4px;opacity:'+(isPast?.4:isCur?1:.7)+';display:flex;align-items:center;justify-content:center;font-size:.62rem;color:#fff;font-weight:600">’+p.duration+‘d</div></div></div>’;
+});
+if(elapsed>0&&elapsed<total){
+const pct=(elapsed/total)*100;
+h+=’<div style="position:relative;margin:8px 0 0 190px;height:0"><div style="position:absolute;right:'+pct+'%;top:-'+(GANTT_PHASES.length*28+10)+'px;bottom:-4px;width:2px;background:var(--red);z-index:2"></div></div>’;
+}
+h+=’</div></div>’;
+el.innerHTML=h;
+}
+
+// ============ AI CHAT ============
+let chatHistory=[];
+function addChatBubble(role,text){
+const el=$(‘chatMessages’);
+const isUser=role===‘user’;
+el.innerHTML+=`<div style="display:flex;justify-content:${isUser?'flex-start':'flex-end'};margin-bottom:10px"><div style="max-width:85%;background:${isUser?'var(--s1)':'var(--ac)'};color:${isUser?'var(--t1)':'#fff'};padding:10px 14px;border-radius:${isUser?'10px 10px 2px 10px':'10px 10px 10px 2px'};font-size:.85rem;white-space:pre-wrap">${text.replace(/</g,'&lt;')}</div></div>`;
+el.scrollTop=el.scrollHeight;
+}
+async function sendAIChat(){
+const input=$(‘chatInput’).value.trim();
+if(!input)return;
+$(‘chatInput’).value=’’;
+addChatBubble(‘user’,input);
+addChatBubble(‘assistant’,‘🔄 מעבד…’);
+
+// Build context with current state summary
+const ctx=`את עוזרת AI לניהול פרויקט שיפוץ דירה בנחמני 13, תל אביב.
+תקציב: 1,000,000 ₪. קבלן: מולי סגל (495K). מטבח: סמל (82K). אדריכלית: מיטל שחר. מעצבת: עירית כהן.
+ספקים קיימים: ${state.vendors.map(v=>v.name).join(’, ’)}
+משימות פתוחות: ${state.tasks.filter(t=>t.status!==‘done’).length}
+הוצאות: שולם ${fmt(state.expenses.filter(e=>e.status===‘paid’).reduce((s,e)=>s+ +e.amount,0))} ₪, התחייבות ${fmt(state.expenses.filter(e=>e.status===‘committed’).reduce((s,e)=>s+ +e.amount,0))} ₪
+
+המשתמשת שלחה הודעה. נתח אותה וספק JSON עם פעולות לביצוע.
+ענה אך ורק ב-JSON בפורמט הבא (ללא markdown, ללא backticks):
+{“message”:“תשובה קצרה בעברית למשתמשת”,“actions”:[{“type”:“expense|task|vendor|decision|issue|purchase|quote”,“data”:{…}}]}
+
+סוגי פעולות:
+
+- expense: {item,amount,status:“paid”|“committed”|“quoted”,category,vendor_name}
+- task: {title,owner:“shlomit”|“erez”|“both”,priority:“urgent”|“high”|“med”,chapter}
+- vendor: {name,role,phone,email,category}
+- decision: {title,details,decided_by,chapter}
+- issue: {description,cost_delta}
+- purchase: {item,model,price,category,vendor_name}
+- quote: {category,vendor_name,amount,notes}
+
+אם לא ברור מה לעשות, שאלי שאלת הבהרה ב-message והשאירי actions ריק.`;
+
+try{
+const resp=await fetch(‘https://api.anthropic.com/v1/messages’,{
+method:‘POST’,
+headers:{‘Content-Type’:‘application/json’},
+body:JSON.stringify({
+model:‘claude-sonnet-4-20250514’,
+max_tokens:1000,
+system:ctx,
+messages:[…chatHistory,{role:‘user’,content:input}]
+})
+});
+const data=await resp.json();
+const text=data.content?.map(b=>b.text||’’).join(’’)||‘שגיאה’;
+chatHistory.push({role:‘user’,content:input});
+chatHistory.push({role:‘assistant’,content:text});
+// Remove “processing” bubble
+const msgs=$(‘chatMessages’);
+msgs.removeChild(msgs.lastChild);
+
+```
+// Try to parse JSON response
+let parsed;
+try{parsed=JSON.parse(text.replace(/```json|```/g,'').trim())}catch(e){
+  addChatBubble('assistant',text);return;
+}
+
+// Show message
+addChatBubble('assistant',parsed.message||'בוצע');
+
+// Execute actions
+if(parsed.actions&&parsed.actions.length){
+  let summary=[];
+  for(const act of parsed.actions){
+    const d=act.data;
+    // Resolve vendor_name to vendor_id
+    if(d.vendor_name){
+      const v=state.vendors.find(x=>x.name.includes(d.vendor_name));
+      if(v)d.vendor_id=v.id;
+      delete d.vendor_name;
+    }
+    switch(act.type){
+      case 'expense':await save('expenses',{item:d.item,amount:d.amount||0,status:d.status||'quoted',category:d.category||'',vendor_id:d.vendor_id||null,paid_date:d.status==='paid'?new Date().toISOString().slice(0,10):null});summary.push('💰 הוצאה: '+d.item);break;
+      case 'task':await save('tasks',{title:d.title,owner:d.owner||'shlomit',priority:d.priority||'med',chapter:d.chapter||'',status:'open'});summary.push('✓ משימה: '+d.title);break;
+      case 'vendor':await save('vendors',{name:d.name,role:d.role||'',phone:d.phone||'',email:d.email||'',category:d.category||''});summary.push('📞 ספק: '+d.name);break;
+      case 'decision':await save('decisions',{title:d.title,details:d.details||'',decided_by:d.decided_by||'',chapter:d.chapter||'',decision_date:new Date().toISOString().slice(0,10)});summary.push('📝 החלטה: '+d.title);break;
+      case 'issue':await save('issues',{description:d.description,cost_delta:d.cost_delta||0,status:'open',issue_date:new Date().toISOString().slice(0,10)});summary.push('⚠️ חריגה: '+d.description);break;
+      case 'purchase':await save('purchases',{item:d.item,model:d.model||'',price:d.price||null,category:d.category||'',vendor_id:d.vendor_id||null});summary.push('🛒 רכש: '+d.item);break;
+      case 'quote':await save('quotes',{category:d.category,vendor_id:d.vendor_id||null,amount:d.amount||0,notes:d.notes||'',status:'open'});summary.push('📋 הצעה: '+d.category);break;
+    }
+  }
+  if(summary.length)addChatBubble('assistant','✅ בוצעו '+summary.length+' פעולות:\n'+summary.join('\n'));
+}
+```
+
+}catch(e){
+const msgs=$(‘chatMessages’);msgs.removeChild(msgs.lastChild);
+addChatBubble(‘assistant’,’❌ שגיאה: ’+e.message);
+}
+}
+
 checkAuth();
 </script>
 
