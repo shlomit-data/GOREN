@@ -23,12 +23,12 @@ body{margin:0;font-family:'Heebo',sans-serif;background:var(--bg);color:var(--t1
 .num{font-family:'Rubik',sans-serif}
 
 /* ============ AUTH SCREEN ============ */
-.auth{position:fixed;inset:0;background:var(–bg);display:flex;align-items:center;justify-content:center;padding:20px;z-index:1000}
-.auth-box{background:var(–s1);border:1px solid var(–bd);border-radius:14px;padding:32px;max-width:400px;width:100%}
+.auth{position:fixed;inset:0;background:var(–bg);display:flex;align-items:center;justify-content:center;padding:20px;z-index:1000;overflow-y:auto}
+.auth-box{background:var(–s1);border:1px solid var(–bd);border-radius:14px;padding:24px;max-width:400px;width:100%;margin:auto}
 .auth-box h1{margin:0 0 8px;font-size:1.3rem}
 .auth-box p{color:var(–t2);font-size:.85rem;margin:0 0 20px}
 .auth-box input{width:100%;padding:12px;background:var(–s2);border:1px solid var(–bd);border-radius:8px;color:var(–t1);font-family:inherit;font-size:.9rem;margin-bottom:10px}
-.auth-box button{width:100%;padding:12px;background:var(–ac);color:#fff;border:none;border-radius:8px;font-family:inherit;font-weight:600;cursor:pointer;font-size:.9rem}
+.auth-box button{width:100%;padding:14px;background:var(–ac);color:#fff;border:none;border-radius:8px;font-family:inherit;font-weight:700;cursor:pointer;font-size:1rem;margin-top:6px;letter-spacing:.5px}
 .auth-box button:disabled{opacity:.5}
 .auth-msg{font-size:.8rem;color:var(–grn);margin-top:10px;text-align:center;min-height:18px}
 
@@ -145,7 +145,7 @@ main{padding:14px}
 
 <!-- ============ AUTH SCREEN ============ -->
 
-<div class="auth" id="authScreen">
+<div class="auth" id="authScreen" style="display:flex">
   <div class="auth-box">
     <h1>🏗 שיפוץ נחמני 13</h1>
     <p>התחברות עם אימייל וסיסמה</p>
@@ -404,17 +404,22 @@ async function login(){
   if(!email||!password){$('authMsg').style.color='var(--red)';$('authMsg').textContent='יש למלא מייל וסיסמה';return}
   $('authBtn').disabled=true;
   $('authMsg').style.color='var(--t2)';
-  $('authMsg').textContent='מתחבר...';
+  $('authMsg').textContent='מתחבר...';$('authBtn').textContent='⏳ מתחבר...';
   const{data,error}=await sb.auth.signInWithPassword({email,password});
-  if(error){$('authMsg').style.color='var(--red)';$('authMsg').textContent=error.message;$('authBtn').disabled=false}
+  if(error){$('authMsg').style.color='var(--red)';$('authMsg').textContent='שגיאה: '+(error.message||'לא ניתן להתחבר');$('authBtn').disabled=false;$('authBtn').textContent='כניסה'}
   else{state.user=data.user;showApp();await loadAll();renderAll()}
 }
 async function logout(){await sb.auth.signOut();location.reload()}
 
 async function checkAuth(){
-  const{data:{session}}=await sb.auth.getSession();
-  if(session){state.user=session.user;showApp();await loadAll();renderAll();setupRealtime()}
-  else{$('authScreen').style.display='flex'}
+  try{
+    const{data:{session}}=await sb.auth.getSession();
+    if(session&&session.user){state.user=session.user;showApp();await loadAll();renderAll();setupRealtime()}
+    else{$('authScreen').style.display='flex'}
+  }catch(e){
+    console.error('Auth check failed:',e);
+    $('authScreen').style.display='flex';
+  }
 }
 
 function showApp(){
