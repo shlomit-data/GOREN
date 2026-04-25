@@ -470,6 +470,7 @@ async function save(table,record){
   else{const{error}=await sb.from(table).insert(record);if(error)alert(error.message)}
   await reload(table);
 }
+function delItem(table,id){del(table,id)}
 async function del(table,id){
   if(!confirm('למחוק?'))return;
   await sb.from(table).delete().eq('id',id);
@@ -532,7 +533,7 @@ let taskFilter='all';
 function renderTaskCard(t){
   const v=t.vendor_id?state.vendors.find(x=>x.id===t.vendor_id):null;
   const late=t.status!=='done'&&t.due_date&&daysFromNow(t.due_date)<0;
-  return `<div class="card"><div class="chk ${t.status==='done'?'done':''}" onclick="toggleTask(${t.id})"></div><div class="card-main"><div class="card-title task-title ${t.status==='done'?'done':''}">${esc(t.title)}</div><div class="card-meta">${t.priority?`<span class="tag ${t.priority}">${t.priority==='urgent'?'דחוף':t.priority==='high'?'גבוה':'רגיל'}</span>`:''}${t.owner?'<span>'+esc(t.owner)+'</span>':''}${v?'<span>📞 '+esc(v.name)+'</span>':''}${t.chapter?'<span>'+esc(t.chapter)+'</span>':''}${t.due_text||t.due_date?'<span>'+(late?'⚠️ ':'')+esc(t.due_text||fmtDate(t.due_date))+'</span>':''}${late?'<span class="tag late">באיחור</span>':''}</div></div><div class="card-actions"><button class="btn btn-sm btn-gh" onclick="openTaskForm(${t.id})">✎</button><button class="btn btn-sm btn-gh" onclick="del(\\'tasks\\',${t.id})">✕</button></div></div>`.replace(/\\'/g,"'");
+  return `<div class="card"><div class="chk ${t.status==='done'?'done':''}" onclick="toggleTask(${t.id})"></div><div class="card-main"><div class="card-title task-title ${t.status==='done'?'done':''}">${esc(t.title)}</div><div class="card-meta">${t.priority?`<span class="tag ${t.priority}">${t.priority==='urgent'?'דחוף':t.priority==='high'?'גבוה':'רגיל'}</span>`:''}${t.owner?'<span>'+esc(t.owner)+'</span>':''}${v?'<span>📞 '+esc(v.name)+'</span>':''}${t.chapter?'<span>'+esc(t.chapter)+'</span>':''}${t.due_text||t.due_date?'<span>'+(late?'⚠️ ':'')+esc(t.due_text||fmtDate(t.due_date))+'</span>':''}${late?'<span class="tag late">באיחור</span>':''}</div></div><div class="card-actions"><button class="btn btn-sm btn-gh" onclick="openTaskForm(${t.id})">✎</button><button class="btn btn-sm btn-gh" onclick="delItem('tasks',${t.id})">✕</button></div></div>`;
 }
 async function toggleTask(id){
   const t=state.tasks.find(x=>x.id===id);if(!t)return;
@@ -825,7 +826,7 @@ function renderAll(){
 
 
 function renderRecs(){
-  $('recList').innerHTML=state.recommendations.length?state.recommendations.map(r=>`<div class="card"><div class="card-main"><div class="card-title">${esc(r.store_name||'')}</div><div class="card-meta">${esc(r.purchase_type||'')}${r.added_by?' · '+esc(r.added_by):''}</div>${r.link?`<a href="${esc(r.link)}" target="_blank" style="font-size:.74rem;color:var(--ac2);text-decoration:none;display:inline-block;margin-top:6px">🔗 ${esc(r.link.substring(0,55))}...</a>`:''}${r.notes?'<div style="font-size:.75rem;color:var(--t2);margin-top:4px">'+esc(r.notes)+'</div>':''}</div><div class="card-actions"><button class="btn btn-sm btn-gh" onclick="del(\'recommendations\',${r.id})">✕</button></div></div>`).join('').replace(/\\'/g,"'"):'<div class="empty">אין המלצות. הוסיפי את הראשונה.</div>';
+  $('recList').innerHTML=state.recommendations.length?state.recommendations.map(r=>`<div class="card"><div class="card-main"><div class="card-title">${esc(r.store_name||'')}</div><div class="card-meta">${esc(r.purchase_type||'')}${r.added_by?' · '+esc(r.added_by):''}</div>${r.link?`<a href="${esc(r.link)}" target="_blank" style="font-size:.74rem;color:var(--ac2);text-decoration:none;display:inline-block;margin-top:6px">🔗 ${esc(r.link.substring(0,55))}...</a>`:''}${r.notes?'<div style="font-size:.75rem;color:var(--t2);margin-top:4px">'+esc(r.notes)+'</div>':''}</div><div class="card-actions"><button class="btn btn-sm btn-gh" onclick="delItem('recommendations',${r.id})">✕</button></div></div>`).join(''):'<div class="empty">אין המלצות. הוסיפי את הראשונה.</div>';
 }
 function openRecForm(){
   openModal('המלצה חדשה',`<div class="form-row"><input id="f_store" placeholder="שם חנות"><input id="f_type" placeholder="סוג רכישה (פרקט/אריחים/...)"><input id="f_link" placeholder="לינק (https://...)"><input id="f_by" placeholder="מי המליץ"><textarea id="f_notes" placeholder="הערות" rows="2"></textarea></div>`,
